@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Tirage au sort culinaire</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh; margin: 0; }
+
+    /* Titre en haut */
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+
+    .container { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      width: 80%; 
+      flex-grow: 1; 
+    }
+
+    /* C'est ici que les boutons vont être alignés à gauche de la roue */
+    .boutons { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      margin-right: 30px; 
+    }
+
+    canvas { margin-top: 20px; }
+    #resultat { 
+      margin-top: 20px; 
+      font-size: 18px; 
+      width: 250px; 
+      text-align: left;
+    }
+
+    button { 
+      margin-top: 20px; 
+      padding: 10px 20px; 
+      font-size: 16px; 
+    }
+
+    /* Positionnement du bouton "Tirer un plat" à droite */
+    #tirerButton {
+      margin-top: 20px;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Titre en haut -->
+  <h1>🎯 Tirer au sort un plat à cuisiner !</h1>
+
+  <div class="container">
+    <!-- Partie boutons à gauche -->
+    <div class="boutons">
+      <button id="tirerButton" onclick="tournerRoue()">Tirer un plat</button>
+      <button onclick="window.location.href='gestion.html'">Modifier la liste des plats</button>
+    </div>
+
+    <!-- Partie roue -->
+    <div style="position: relative;">
+      <canvas id="roueCanvas" width="500" height="500"></canvas>
+    </div>
+
+    <!-- Partie résultat à droite -->
+    <div id="resultat"></div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('roueCanvas');
+    const ctx = canvas.getContext('2d');
+    const rayon = canvas.width / 2;
+    let plats = JSON.parse(localStorage.getItem("platsPerso")) || [];
+    let angleInitial = 0;
+
+    // Génère des couleurs différentes pour chaque compartiment de la roue
+    function couleurAleatoire(i) {
+      const couleurs = [
+        '#e6194b','#3cb44b','#ffe119','#4363d8','#f58231',
+        '#911eb4','#46f0f0','#f032e6','#bcf60c','#fabebe',
+        '#008080','#e6beff','#9a6324','#fffac8','#800000',
+        '#aaffc3','#808000','#ffd8b1','#000075','#808080'
+      ];
+      return couleurs[i % couleurs.length];
+    }
+
+    // Dessiner la roue avec au moins 8 sections de couleurs différentes
+    function dessinerRoue() {
+      const anglePart = (2 * Math.PI) / Math.max(plats.length, 8); // S'assure d'avoir au moins 8 sections
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < Math.max(plats.length, 8); i++) {
+        const start = angleInitial + i * anglePart;
+        const end = start + anglePart;
+        ctx.beginPath();
+        ctx.moveTo(rayon, rayon);
+        ctx.arc(rayon, rayon, rayon, start, end);
+        ctx.fillStyle = couleurAleatoire(i);
+        ctx.fill();
+        ctx.stroke();
+      }
+    }
+
+    function tournerRoue() {
+  if (plats.length === 0) {
+    alert("Aucun plat enregistré !");
+    return;
+  }
+
+  // Effacer le résultat précédent
+  document.getElementById("resultat").innerHTML = "";
+
+  let tours = 5 + Math.random() * 3; // 5 à 8 tours
+  const angleFinal = angleInitial + 2 * Math.PI * tours;
+  const duration = 4000;
+  const steps = 60;
+  let count = 0;
+
+  const interval = setInterval(() => {
+    count++;
+    const progress = count / steps;
+    const easeOut = 1 - Math.pow(1 - progress, 3); // easing out
+    angleInitial = angleFinal * easeOut;
+
+    dessinerRoue();
+
+    if (count >= steps) {
+      clearInterval(interval);
+      const angle = angleInitial % (2 * Math.PI);
+      const angleParPart = (2 * Math.PI) / plats.length;
+      const index = Math.floor(plats.length - (angle / angleParPart)) % plats.length;
+      afficherResultat(plats[index]);
+    }
+  }, duration / steps);
+}
+
+
+    function afficherResultat(plat) {
+      document.getElementById("resultat").innerHTML = `
+        <h2>🍽️ ${plat.nom}</h2>
+        <p><strong>Pays :</strong> ${plat.pays}</p>
+        <p><strong>Continent :</strong> ${plat.continent}</p>
+        <p><em>${plat.description}</em></p>
+      `;
+    }
+
+    dessinerRoue();
+  </script>
+</body>
+</html>

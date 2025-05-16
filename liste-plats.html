@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Liste des Plats</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; }
+    .plat-container { margin-top: 20px; }
+    button { padding: 10px 20px; font-size: 16px; margin: 10px; }
+    .plat { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <h1>Liste complète des plats</h1>
+  
+  <div id="platsList" class="plat-container">
+    <!-- La liste des plats sera insérée ici -->
+  </div>
+
+  <button onclick="window.location.href='gestion.html'">Retour à la gestion des plats</button>
+
+  <script>
+    // Charger les plats du localStorage
+    let platsPerso = JSON.parse(localStorage.getItem("platsPerso")) || [];
+
+    // Trier les plats par ordre alphabétique
+    platsPerso.sort((a, b) => a.nom.localeCompare(b.nom));
+
+    // Afficher les plats dans la page
+    const platsList = document.getElementById("platsList");
+
+    if (platsPerso.length === 0) {
+      platsList.innerHTML = "<p>Aucun plat enregistré.</p>";
+    } else {
+      platsPerso.forEach((plat, index) => {
+        const platDiv = document.createElement("div");
+        platDiv.classList.add("plat");
+        platDiv.innerHTML = `
+          <h4>${plat.nom} (${plat.pays})</h4>
+          <p><strong>Continent:</strong> ${plat.continent}</p>
+          <p><em>${plat.description}</em></p>
+          <button onclick="supprimerPlat(${index})">Supprimer ce plat</button>
+          <hr>
+        `;
+        platsList.appendChild(platDiv);
+      });
+    }
+
+    // Fonction pour supprimer un plat
+    function supprimerPlat(index) {
+      platsPerso.splice(index, 1); // Retirer le plat de la liste
+      localStorage.setItem("platsPerso", JSON.stringify(platsPerso)); // Sauvegarder la nouvelle liste
+      location.reload(); // Recharger la page pour afficher la liste mise à jour
+    }
+  </script>
+</body>
+</html>

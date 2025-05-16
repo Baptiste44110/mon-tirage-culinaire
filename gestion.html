@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion des Plats</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; }
+    .form-container, .export-container, .import-container { margin-top: 20px; }
+    button { padding: 10px 20px; font-size: 16px; margin: 10px; }
+    input, textarea, select { padding: 8px; margin: 5px; }
+  </style>
+</head>
+<body>
+  <h1>🎉 Gérer mes plats</h1>
+
+  <!-- Formulaire pour ajouter un plat -->
+  <div class="form-container">
+    <h3>Ajouter un plat</h3>
+    <form id="formAjout" onsubmit="ajouterSpecialite(event)">
+      <input type="text" id="nom" placeholder="Nom du plat" required><br>
+      <input type="text" id="pays" placeholder="Pays d'origine" required><br>
+      <select id="continentForm">
+        <option value="Afrique">Afrique</option>
+        <option value="Asie">Asie</option>
+        <option value="Europe">Europe</option>
+        <option value="Amérique">Amérique</option>
+        <option value="Océanie">Océanie</option>
+      </select><br>
+      <textarea id="description" placeholder="Description du plat" required></textarea><br>
+      <button type="submit">Ajouter un plat</button>
+    </form>
+  </div>
+
+  <!-- Bouton pour voir la liste complète des plats -->
+  <br><button onclick="window.location.href='liste-plats.html'">Voir la liste complète des plats</button>
+
+  <!-- Section pour Exporter les plats -->
+  <div class="export-container">
+    <h3>📤 Exporter vos plats personnalisés</h3>
+    <button onclick="exporterPlats()">📥 Exporter en JSON</button>
+  </div>
+
+  <!-- Section pour Importer les plats -->
+  <div class="import-container">
+    <h3>📥 Importer des plats personnalisés</h3>
+    <input type="file" accept=".json" onchange="importerPlats(event)">
+    <p id="messageImport" style="color: green;"></p>
+    <div id="previewImport"></div>
+    <button onclick="confirmerImport()">✅ Confirmer l'import</button>
+  </div>
+
+  <!-- Bouton pour revenir à la roue -->
+  <br><button onclick="window.location.href='index.html'">Retour à la roue</button>
+
+  <script>
+    // Stocker les plats personnalisés dans localStorage
+    let platsPerso = JSON.parse(localStorage.getItem("platsPerso")) || [];
+
+    // Ajouter un plat personnalisé
+    function ajouterSpecialite(event) {
+      event.preventDefault(); // Empêche le formulaire de recharger la page
+
+      const nom = document.getElementById("nom").value.trim();
+      const pays = document.getElementById("pays").value.trim();
+      const continent = document.getElementById("continentForm").value;
+      const description = document.getElementById("description").value.trim();
+
+      if (!nom || !pays || !continent || !description) {
+        alert("Merci de remplir tous les champs.");
+        return;
+      }
+
+      // Vérification des doublons
+      const existe = platsPerso.some(p => p.nom.toLowerCase() === nom.toLowerCase() && p.pays.toLowerCase() === pays.toLowerCase());
+
+      if (existe) {
+        alert("Ce plat existe déjà dans la liste !");
+        return;
+      }
+
+      const nouvelleSpecialite = { nom, pays, continent, description };
+      platsPerso.push(nouvelleSpecialite); // Ajout du plat à la liste
+      localStorage.setItem("platsPerso", JSON.stringify(platsPerso));
+
+      // Message de confirmation
+      alert("Plat ajouté avec succès!");
+
+      // Réinitialiser le formulaire
+      document.getElementById("formAjout").reset();
+    }
+
+    // Exporter les plats en JSON
+    function exporterPlats() {
+      if (platsPerso.length === 0) {
+        alert("Aucun plat à exporter !");
+        return;
+      }
+
+      const dataStr = JSON.stringify(platsPerso, null, 2); // joli format
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const lien = document.createElement("a");
+      lien.href = url;
+      lien.download = "mes-plats.json";
+      lien.click();
+      URL.revokeObjectURL(url); // nettoyage
+    }
+
+    let platsImportTemporaire = []; // plats temporairement chargés
+
+    function importerPlats(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const data = JSON.parse(e.target.result);
+
+          const estValide = Array.isArray(data) && data.every(p =>
+            p.nom && p.pays && p.continent && p.description
+          );
+
+          if (!estValide) {
+            alert("Fichier JSON invalide ou incomplet.");
+            return;
+          }
+
+          platsImportTemporaire = data; // stocke pour confirmation
+          afficherPreviewImport(data);
+        } catch (err) {
+          alert("Erreur lors de la lecture du fichier JSON.");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function afficherPreviewImport(data) {
+      const container = document.getElementById("previewImport");
+      container.innerHTML = "<h4>📦 Plats à importer :</h4>";
+
+      data.forEach(p => {
+        const div = document.createElement("div");
+        div.innerHTML = `<strong>${p.nom}</strong> (${p.pays}) - ${p.continent}<br><em>${p.description}</em><hr>`;
+        container.appendChild(div);
+      });
+    }
+
+    function confirmerImport() {
+      let platsAjoutes = 0;
+
+      platsImportTemporaire.forEach(p => {
+        const existe = platsPerso.some(e =>
+          e.nom.toLowerCase() === p.nom.toLowerCase() &&
+          e.pays.toLowerCase() === p.pays.toLowerCase()
+        );
+
+        if (!existe) {
+          platsPerso.push(p);
+          platsAjoutes++;
+        }
+      });
+
+      localStorage.setItem("platsPerso", JSON.stringify(platsPerso));
+
+      platsImportTemporaire = [];
+      document.getElementById("previewImport").innerHTML = "";
+      document.getElementById("messageImport").textContent =
+        platsAjoutes > 0
+          ? `✅ ${platsAjoutes} plats importés avec succès !`
+          : "⚠️ Tous les plats étaient déjà présents.";
+
+      setTimeout(() => {
+        document.getElementById("messageImport").textContent = "";
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
