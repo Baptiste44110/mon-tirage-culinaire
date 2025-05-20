@@ -4,58 +4,105 @@
   <meta charset="UTF-8">
   <title>Tirage au sort culinaire</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh; margin: 0; }
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap');
 
-    /* Titre en haut */
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 20px;
-    }
+body {
+  font-family: 'Quicksand', sans-serif;
+  background: linear-gradient(135deg, #fffaf0, #f0f4f8);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  color: #333;
+}
 
-    .container { 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      width: 80%; 
-      flex-grow: 1; 
-    }
+h1 {
+  font-size: 2.5rem; /* Un peu plus grand */
+  letter-spacing: 1px; /* Aéré */
+  margin: 30px 0 20px;
+  color: #e74c3c;
+}
 
-    /* C'est ici que les boutons vont être alignés à gauche de la roue */
-    .boutons { 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      margin-right: 30px; 
-    }
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  max-width: 1100px;
+  gap: 40px;
+  flex-grow: 1;
+  flex-wrap: wrap;
+}
 
-    canvas { margin-top: 20px; }
-    #resultat { 
-      margin-top: 20px; 
-      font-size: 18px; 
-      width: 250px; 
-      text-align: left;
-    }
+.boutons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
 
-    button { 
-      margin-top: 20px; 
-      padding: 10px 20px; 
-      font-size: 16px; 
-    }
+button {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
 
-    /* Positionnement du bouton "Tirer un plat" à droite */
-    #tirerButton {
-      margin-top: 20px;
-    }
-    
-  @keyframes pop {
-  0% { transform: scale(0.8); opacity: 0; }
-  60% { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(1); }
+button:hover {
+  background-color: #219150;
+  transform: scale(1.05);
+}
+
+canvas {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  border-radius: 50%;
+  background-color: white;
+}
+
+#resultat {
+  background: #ffffffcc;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 20px;
+  width: 280px;
+  min-height: 150px;
+  transition: transform 0.3s ease;
+}
+
+#resultat h2 {
+  margin-top: 0;
+  color: #3498db;
 }
 
 #resultat.animated {
   animation: pop 0.6s ease-out;
 }
+
+@keyframes pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+/* Responsive mobile */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .boutons {
+    margin-bottom: 20px;
+  }
+}
+
 
   </style>
 </head>
