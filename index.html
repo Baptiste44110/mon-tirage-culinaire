@@ -128,10 +128,8 @@
 
     if (count >= steps) {
       clearInterval(interval);
-      const angle = angleInitial % (2 * Math.PI);
-      const angleParPart = (2 * Math.PI) / plats.length;
-      const index = Math.floor(plats.length - (angle / angleParPart)) % plats.length;
-      afficherResultat(plats[index]);
+     const index = Math.floor(Math.random() * plats.length);
+    afficherResultat(plats[index]);
     }
   }, duration / steps);
 }
