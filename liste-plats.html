@@ -87,27 +87,31 @@
     };
 
     window.chargerDepuisFirebase = function () {
-      if (!currentUserId) {
-        alert("⚠️ Veuillez vous connecter.");
-        return;
-      }
+  if (!window.currentUser) {
+    alert("Veuillez vous connecter.");
+    return;
+  }
 
-      chargerPlatsFirebase(currentUserId)
-        .then((data) => {
-          if (data && Array.isArray(data)) {
-            plats = data;
-            localStorage.setItem("platsPerso", JSON.stringify(plats));
-            alert("✅ Liste chargée !");
-            afficherListe();
-          } else {
-            alert("Aucune liste trouvée sur le cloud.");
-          }
-        })
-        .catch((err) => {
-          console.error(err);
-          alert("Erreur lors du chargement.");
-        });
-    };
+  chargerPlatsFirebase(window.currentUser)
+    .then((platsCloud) => {
+      const platsLocal = JSON.parse(localStorage.getItem("platsPerso")) || [];
+
+      const nomsLocal = platsLocal.map(p => p.nom.toLowerCase());
+
+      const platsFusionnes = [
+        ...platsLocal,
+        ...platsCloud.filter(p => !nomsLocal.includes(p.nom.toLowerCase()))
+      ];
+
+      localStorage.setItem("platsPerso", JSON.stringify(platsFusionnes));
+      alert("✅ Liste fusionnée avec le cloud !");
+      location.reload();
+    })
+    .catch((err) => {
+      console.error("Erreur lors du chargement :", err);
+      alert("Erreur lors du chargement depuis le cloud.");
+    });
+};
 
     // Auth
     btnAuth.onclick = () => {
