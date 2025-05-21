@@ -10,25 +10,38 @@
 
   <div class="container">
     <div class="boutons">
-      <button id="btnTourner" disabled>Tirer un plat</button>
+      <button onclick="tournerRoue()">Tirer un plat</button>
       <button onclick="window.location.href='gestion.html'">Modifier la liste des plats</button>
     </div>
 
     <div class="roue-container">
+      <div id="fleche"></div>
       <canvas id="roueCanvas" width="500" height="500"></canvas>
     </div>
 
     <div id="resultat"></div>
   </div>
 
-  <script type="module">
-    import { auth, chargerPlatsFirebase, onAuthStateChanged } from './firebase.js';
+  <script>
+    // Vérifier si un mode est défini en sessionStorage
+    const mode = sessionStorage.getItem('mode'); // 'invite' ou 'connecte'
+    if (!mode) {
+      // Pas de mode choisi, redirection vers la page de choix (index.html)
+      window.location.href = 'index.html';
+    }
+
+    let plats = [];
+
+    if (mode === 'connecte') {
+      // Récupérer les plats synchronisés en localStorage (exemple)
+      plats = JSON.parse(localStorage.getItem('platsCloud')) || [];
+    } else if (mode === 'invite') {
+      plats = JSON.parse(localStorage.getItem('platsPerso')) || [];
+    }
 
     const canvas = document.getElementById('roueCanvas');
     const ctx = canvas.getContext('2d');
     const rayon = canvas.width / 2;
-    const btnTourner = document.getElementById('btnTourner');
-    let plats = [];
     let angleInitial = 0;
 
     function couleurAleatoire(i) {
@@ -54,16 +67,6 @@
         ctx.fill();
         ctx.stroke();
       }
-    }
-
-    function afficherResultat(plat) {
-      const resultat = document.getElementById("resultat");
-      resultat.innerHTML = `
-        <h2>🍽️ ${plat.nom}</h2>
-        <p><strong>Pays :</strong> ${plat.pays}</p>
-        <p><strong>Continent :</strong> ${plat.continent}</p>
-        <p><em>${plat.description}</em></p>
-      `;
     }
 
     function tournerRoue() {
@@ -96,42 +99,29 @@
       }, duration / steps);
     }
 
-    btnTourner.onclick = tournerRoue;
+    function afficherResultat(plat) {
+      const resultat = document.getElementById("resultat");
+      const son = document.getElementById("sonTirage");
+      son.currentTime = 0;
+      son.play();
 
-    // Chargement des plats selon le mode
-    const mode = sessionStorage.getItem('mode');
+      resultat.innerHTML = `
+        <h2>🍽️ ${plat.nom}</h2>
+        <p><strong>Pays :</strong> ${plat.pays}</p>
+        <p><strong>Continent :</strong> ${plat.continent}</p>
+        <p><em>${plat.description}</em></p>
+      `;
 
-    if (mode === 'connecte') {
-      const uid = sessionStorage.getItem('userUid');
-      if (!uid) {
-        alert("Utilisateur non reconnu, veuillez vous reconnecter.");
-        window.location.href = 'choix.html';
-      } else {
-        // Charge les plats depuis Firebase
-        chargerPlatsFirebase(uid).then(platsCloud => {
-          plats = platsCloud;
-          if (plats.length === 0) {
-            alert("Aucun plat dans le cloud, ajoutez-en dans la gestion.");
-          }
-          btnTourner.disabled = false;
-          dessinerRoue();
-        }).catch(err => {
-          alert("Erreur lors du chargement des plats depuis le cloud.");
-          console.error(err);
-        });
-      }
-    } else if (mode === 'invite') {
-      // Charge les plats locaux
-      plats = JSON.parse(localStorage.getItem('platsPerso')) || [];
-      if (plats.length === 0) {
-        alert("Aucun plat local trouvé, ajoutez-en dans la gestion.");
-      }
-      btnTourner.disabled = false;
-      dessinerRoue();
-    } else {
-      // Pas de mode défini : retourne au choix
-      window.location.href = 'choix.html';
+      resultat.classList.remove("animated");
+      void resultat.offsetWidth;
+      resultat.classList.add("animated");
     }
+
+    dessinerRoue();
   </script>
+
+  <audio id="sonTirage">
+    <source src="notification.wav" type="audio/wav" />
+  </audio>
 </body>
 </html>
