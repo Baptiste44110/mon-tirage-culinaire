@@ -49,10 +49,46 @@
   <br>
   <button onclick="window.location.href='index.html'">Retour à la roue</button>
 
-  <script>
-    let platsPerso = JSON.parse(localStorage.getItem("platsPerso")) || [];
+  <footer id="footerUser" style="margin-top:20px; font-style: italic; color: #666;">
+    Connecté en tant que : <span id="userEmail">Non connecté</span>
+  </footer>
 
-    function ajouterSpecialite(event) {
+  <script type="module">
+    import { 
+      onAuthStateChangedListener, 
+      chargerPlatsFirebase, 
+      sauvegarderPlatsFirebase 
+    } from './js/firebase.js';
+
+    const mode = sessionStorage.getItem('mode'); // 'invite' ou 'connecte'
+    if (!mode) {
+      window.location.href = 'index.html';
+    }
+
+    const userEmailSpan = document.getElementById('userEmail');
+    const formAjout = document.getElementById('formAjout');
+    let platsPerso = [];
+
+    // Charger les plats selon mode et utilisateur connecté
+    async function chargerPlats(user) {
+      if (mode === 'connecte' && user) {
+        platsPerso = await chargerPlatsFirebase(user);
+      } else {
+        platsPerso = JSON.parse(localStorage.getItem('platsPerso')) || [];
+      }
+    }
+
+    // Sauvegarder plats selon mode et utilisateur connecté
+    async function sauvegarderPlats(user) {
+      if (mode === 'connecte' && user) {
+        await sauvegarderPlatsFirebase(platsPerso, user);
+      } else {
+        localStorage.setItem('platsPerso', JSON.stringify(platsPerso));
+      }
+    }
+
+    // Ajouter un plat
+    async function ajouterSpecialite(event) {
       event.preventDefault();
       const nom = document.getElementById("nom").value.trim();
       const pays = document.getElementById("pays").value.trim();
@@ -64,7 +100,7 @@
         return;
       }
 
-      const existe = platsPerso.some(p => 
+      const existe = platsPerso.some(p =>
         p.nom.toLowerCase() === nom.toLowerCase() &&
         p.pays.toLowerCase() === pays.toLowerCase()
       );
@@ -76,11 +112,12 @@
 
       const nouvelleSpecialite = { nom, pays, continent, description };
       platsPerso.push(nouvelleSpecialite);
-      localStorage.setItem("platsPerso", JSON.stringify(platsPerso));
+      await sauvegarderPlats(currentUser);
       alert("Plat ajouté avec succès !");
-      document.getElementById("formAjout").reset();
+      formAjout.reset();
     }
 
+    // Exporter plats
     function exporterPlats() {
       if (platsPerso.length === 0) {
         alert("Aucun plat à exporter !");
@@ -98,6 +135,7 @@
 
     let platsImportTemporaire = [];
 
+    // Importer plats JSON
     function importerPlats(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -124,6 +162,7 @@
       reader.readAsText(file);
     }
 
+    // Afficher preview import
     function afficherPreviewImport(data) {
       const container = document.getElementById("previewImport");
       container.innerHTML = "<h4>📦 Plats à importer :</h4>";
@@ -134,7 +173,8 @@
       });
     }
 
-    function confirmerImport() {
+    // Confirmer import et sauvegarder
+    async function confirmerImport() {
       let platsAjoutes = 0;
 
       platsImportTemporaire.forEach(p => {
@@ -149,7 +189,7 @@
         }
       });
 
-      localStorage.setItem("platsPerso", JSON.stringify(platsPerso));
+      await sauvegarderPlats(currentUser);
       platsImportTemporaire = [];
       document.getElementById("previewImport").innerHTML = "";
       document.getElementById("messageImport").textContent =
@@ -161,6 +201,31 @@
         document.getElementById("messageImport").textContent = "";
       }, 3000);
     }
+
+    // Gestion de l'état de connexion
+    let currentUser = null;
+    onAuthStateChangedListener(async (user) => {
+      if (mode === 'connecte') {
+        if (!user) {
+          alert("Connexion requise.");
+          window.location.href = 'index.html';
+          return;
+        }
+        currentUser = user;
+        userEmailSpan.textContent = user.email || user.displayName || "Utilisateur connecté";
+        await chargerPlats(user);
+      } else {
+        currentUser = null;
+        userEmailSpan.textContent = "Mode invité";
+        await chargerPlats(null);
+      }
+    });
+
+    window.ajouterSpecialite = ajouterSpecialite;
+    window.exporterPlats = exporterPlats;
+    window.importerPlats = importerPlats;
+    window.confirmerImport = confirmerImport;
+
   </script>
 </body>
 </html>
