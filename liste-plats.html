@@ -1,57 +1,97 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Liste des Plats</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; }
-    .plat-container { margin-top: 20px; }
-    button { padding: 10px 20px; font-size: 16px; margin: 10px; }
-    .plat { margin: 10px 0; padding: 10px; border: 1px solid #ccc; }
-  </style>
+  <meta charset="UTF-8" />
+  <title>Liste des plats</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <h1>Liste complète des plats</h1>
-  
-  <div id="platsList" class="plat-container">
-    <!-- La liste des plats sera insérée ici -->
+  <h1>🍛 Tous les plats enregistrés</h1>
+
+  <div class="container" style="justify-content: center;">
+    <div id="resultat" style="width: 100%;">
+      <div id="liste" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;"></div>
+    </div>
   </div>
 
-  <button onclick="window.location.href='gestion.html'">Retour à la gestion des plats</button>
+  <button id="btnRetourGestion" onclick="window.location.href='gestion.html'">← Retour à la gestion des plats</button>
+  <button onclick="sauvegarderSurFirebase()">💾 Sauvegarder sur le cloud</button>
+  <button onclick="chargerDepuisFirebase()">☁️ Charger depuis le cloud</button>
 
   <script>
-    // Charger les plats du localStorage
-    let platsPerso = JSON.parse(localStorage.getItem("platsPerso")) || [];
+    let plats = JSON.parse(localStorage.getItem("platsPerso")) || [];
 
-    // Trier les plats par ordre alphabétique
-    platsPerso.sort((a, b) => a.nom.localeCompare(b.nom));
+    // Tri alphabétique (insensible à la casse)
+    plats.sort((a, b) => a.nom.toLowerCase().localeCompare(b.nom.toLowerCase()));
 
-    // Afficher les plats dans la page
-    const platsList = document.getElementById("platsList");
+    const liste = document.getElementById("liste");
 
-    if (platsPerso.length === 0) {
-      platsList.innerHTML = "<p>Aucun plat enregistré.</p>";
+    if (plats.length === 0) {
+      liste.innerHTML = "<p>Aucun plat enregistré.</p>";
     } else {
-      platsPerso.forEach((plat, index) => {
-        const platDiv = document.createElement("div");
-        platDiv.classList.add("plat");
-        platDiv.innerHTML = `
-          <h4>${plat.nom} (${plat.pays})</h4>
-          <p><strong>Continent:</strong> ${plat.continent}</p>
+      plats.forEach((plat, index) => {
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <h3>${plat.nom}</h3>
+          <p><strong>Pays :</strong> ${plat.pays}</p>
+          <p><strong>Continent :</strong> ${plat.continent}</p>
           <p><em>${plat.description}</em></p>
           <button onclick="supprimerPlat(${index})">Supprimer ce plat</button>
-          <hr>
         `;
-        platsList.appendChild(platDiv);
+        liste.appendChild(div);
       });
     }
 
-    // Fonction pour supprimer un plat
     function supprimerPlat(index) {
-      platsPerso.splice(index, 1); // Retirer le plat de la liste
-      localStorage.setItem("platsPerso", JSON.stringify(platsPerso)); // Sauvegarder la nouvelle liste
-      location.reload(); // Recharger la page pour afficher la liste mise à jour
+      if (confirm("Voulez-vous vraiment supprimer ce plat ?")) {
+        plats.splice(index, 1);
+        localStorage.setItem("platsPerso", JSON.stringify(plats));
+        location.reload();
+      }
     }
   </script>
+
+  <!-- Script type module pour Firebase et fonctions cloud -->
+  <script type="module">
+  import { sauvegarderPlatsFirebase, chargerPlatsFirebase } from "./firebase.js";
+
+  window.sauvegarderSurFirebase = function () {
+    const plats = JSON.parse(localStorage.getItem("platsPerso")) || [];
+
+    if (plats.length === 0) {
+      alert("Aucun plat à sauvegarder.");
+      return;
+    }
+
+    sauvegarderPlatsFirebase(plats)
+      .then(() => {
+        alert("✅ Liste sauvegardée sur le cloud !");
+      })
+      .catch((error) => {
+        console.error("Erreur lors de la sauvegarde :", error);
+        alert("❌ Échec de la sauvegarde sur le cloud.");
+      });
+  };
+
+  window.chargerDepuisFirebase = function () {
+    chargerPlatsFirebase()
+      .then((data) => {
+        if (data && Array.isArray(data)) {
+          localStorage.setItem("platsPerso", JSON.stringify(data));
+          alert("✅ Liste chargée depuis le cloud !");
+          location.reload();
+        } else {
+          alert("Aucune liste disponible sur le cloud.");
+        }
+      })
+      .catch((err) => {
+        console.error("Erreur lors du chargement :", err);
+        alert("Erreur lors du chargement depuis le cloud.");
+      });
+  };
+</script>
+
+
 </body>
 </html>
