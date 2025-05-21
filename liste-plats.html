@@ -17,81 +17,121 @@
   <button id="btnRetourGestion" onclick="window.location.href='gestion.html'">← Retour à la gestion des plats</button>
   <button onclick="sauvegarderSurFirebase()">💾 Sauvegarder sur le cloud</button>
   <button onclick="chargerDepuisFirebase()">☁️ Charger depuis le cloud</button>
+  <button id="btnAuth">Connexion</button>
+  <p id="infoUser">Non connecté</p>
 
-  <script>
+  <script type="module">
+    import {
+      sauvegarderPlatsFirebase,
+      chargerPlatsFirebase,
+      signInWithGoogle,
+      signOutUser,
+      onAuthStateChangedListener
+    } from "./firebase.js";
+
     let plats = JSON.parse(localStorage.getItem("platsPerso")) || [];
-
-    // Tri alphabétique (insensible à la casse)
-    plats.sort((a, b) => a.nom.toLowerCase().localeCompare(b.nom.toLowerCase()));
-
     const liste = document.getElementById("liste");
+    const btnAuth = document.getElementById("btnAuth");
+    const infoUser = document.getElementById("infoUser");
 
-    if (plats.length === 0) {
-      liste.innerHTML = "<p>Aucun plat enregistré.</p>";
-    } else {
-      plats.forEach((plat, index) => {
-        const div = document.createElement("div");
-        div.className = "card";
-        div.innerHTML = `
-          <h3>${plat.nom}</h3>
-          <p><strong>Pays :</strong> ${plat.pays}</p>
-          <p><strong>Continent :</strong> ${plat.continent}</p>
-          <p><em>${plat.description}</em></p>
-          <button onclick="supprimerPlat(${index})">Supprimer ce plat</button>
-        `;
-        liste.appendChild(div);
-      });
+    let currentUserId = null;
+
+    function afficherListe() {
+      liste.innerHTML = "";
+
+      plats.sort((a, b) => a.nom.toLowerCase().localeCompare(b.nom.toLowerCase()));
+
+      if (plats.length === 0) {
+        liste.innerHTML = "<p>Aucun plat enregistré.</p>";
+      } else {
+        plats.forEach((plat, index) => {
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <h3>${plat.nom}</h3>
+            <p><strong>Pays :</strong> ${plat.pays}</p>
+            <p><strong>Continent :</strong> ${plat.continent}</p>
+            <p><em>${plat.description}</em></p>
+            <button onclick="supprimerPlat(${index})">Supprimer ce plat</button>
+          `;
+          liste.appendChild(div);
+        });
+      }
     }
 
-    function supprimerPlat(index) {
+    window.supprimerPlat = function(index) {
       if (confirm("Voulez-vous vraiment supprimer ce plat ?")) {
         plats.splice(index, 1);
         localStorage.setItem("platsPerso", JSON.stringify(plats));
-        location.reload();
+        afficherListe();
       }
-    }
+    };
+
+    window.sauvegarderSurFirebase = function () {
+      if (!currentUserId) {
+        alert("⚠️ Veuillez vous connecter.");
+        return;
+      }
+
+      if (plats.length === 0) {
+        alert("Aucun plat à sauvegarder.");
+        return;
+      }
+
+      sauvegarderPlatsFirebase(plats, currentUserId)
+        .then(() => alert("✅ Liste sauvegardée sur le cloud !"))
+        .catch((err) => {
+          console.error(err);
+          alert("❌ Échec de la sauvegarde.");
+        });
+    };
+
+    window.chargerDepuisFirebase = function () {
+      if (!currentUserId) {
+        alert("⚠️ Veuillez vous connecter.");
+        return;
+      }
+
+      chargerPlatsFirebase(currentUserId)
+        .then((data) => {
+          if (data && Array.isArray(data)) {
+            plats = data;
+            localStorage.setItem("platsPerso", JSON.stringify(plats));
+            alert("✅ Liste chargée !");
+            afficherListe();
+          } else {
+            alert("Aucune liste trouvée sur le cloud.");
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          alert("Erreur lors du chargement.");
+        });
+    };
+
+    // Auth
+    btnAuth.onclick = () => {
+      if (currentUserId) {
+        signOutUser();
+      } else {
+        signInWithGoogle();
+      }
+    };
+
+    onAuthStateChangedListener((user) => {
+      if (user) {
+        currentUserId = user.uid;
+        infoUser.textContent = `Connecté : ${user.displayName}`;
+        btnAuth.textContent = "Déconnexion";
+      } else {
+        currentUserId = null;
+        infoUser.textContent = "Non connecté";
+        btnAuth.textContent = "Connexion";
+      }
+    });
+
+    // Affichage initial
+    afficherListe();
   </script>
-
-  <!-- Script type module pour Firebase et fonctions cloud -->
-  <script type="module">
-  import { sauvegarderPlatsFirebase, chargerPlatsFirebase } from "./firebase.js";
-
-  window.sauvegarderSurFirebase = function () {
-    const plats = JSON.parse(localStorage.getItem("platsPerso")) || [];
-
-    if (plats.length === 0) {
-      alert("Aucun plat à sauvegarder.");
-      return;
-    }
-
-    sauvegarderPlatsFirebase(plats)
-      .then(() => {
-        alert("✅ Liste sauvegardée sur le cloud !");
-      })
-      .catch((error) => {
-        console.error("Erreur lors de la sauvegarde :", error);
-        alert("❌ Échec de la sauvegarde sur le cloud.");
-      });
-  };
-
-  window.chargerDepuisFirebase = function () {
-    chargerPlatsFirebase()
-      .then((data) => {
-        if (data && Array.isArray(data)) {
-          localStorage.setItem("platsPerso", JSON.stringify(data));
-          alert("✅ Liste chargée depuis le cloud !");
-          location.reload();
-        } else {
-          alert("Aucune liste disponible sur le cloud.");
-        }
-      })
-      .catch((err) => {
-        console.error("Erreur lors du chargement :", err);
-        alert("Erreur lors du chargement depuis le cloud.");
-      });
-  };
-</script>
-
-
 </body>
 </html>
