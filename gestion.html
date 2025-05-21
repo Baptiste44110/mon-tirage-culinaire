@@ -3,12 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Gestion des Plats</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; }
-    .form-container, .export-container, .import-container { margin-top: 20px; }
-    button { padding: 10px 20px; font-size: 16px; margin: 10px; }
-    input, textarea, select { padding: 8px; margin: 5px; }
-  </style>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <h1>🎉 Gérer mes plats</h1>
@@ -32,15 +27,16 @@
   </div>
 
   <!-- Bouton pour voir la liste complète des plats -->
-  <br><button onclick="window.location.href='liste-plats.html'">Voir la liste complète des plats</button>
+  <br>
+  <button onclick="window.location.href='liste-plats.html'">Voir la liste complète des plats</button>
 
-  <!-- Section pour Exporter les plats -->
+  <!-- Export -->
   <div class="export-container">
     <h3>📤 Exporter vos plats personnalisés</h3>
     <button onclick="exporterPlats()">📥 Exporter en JSON</button>
   </div>
 
-  <!-- Section pour Importer les plats -->
+  <!-- Import -->
   <div class="import-container">
     <h3>📥 Importer des plats personnalisés</h3>
     <input type="file" accept=".json" onchange="importerPlats(event)">
@@ -49,17 +45,15 @@
     <button onclick="confirmerImport()">✅ Confirmer l'import</button>
   </div>
 
-  <!-- Bouton pour revenir à la roue -->
-  <br><button onclick="window.location.href='index.html'">Retour à la roue</button>
+  <!-- Retour à la roue -->
+  <br>
+  <button onclick="window.location.href='index.html'">Retour à la roue</button>
 
   <script>
-    // Stocker les plats personnalisés dans localStorage
     let platsPerso = JSON.parse(localStorage.getItem("platsPerso")) || [];
 
-    // Ajouter un plat personnalisé
     function ajouterSpecialite(event) {
-      event.preventDefault(); // Empêche le formulaire de recharger la page
-
+      event.preventDefault();
       const nom = document.getElementById("nom").value.trim();
       const pays = document.getElementById("pays").value.trim();
       const continent = document.getElementById("continentForm").value;
@@ -70,8 +64,10 @@
         return;
       }
 
-      // Vérification des doublons
-      const existe = platsPerso.some(p => p.nom.toLowerCase() === nom.toLowerCase() && p.pays.toLowerCase() === pays.toLowerCase());
+      const existe = platsPerso.some(p => 
+        p.nom.toLowerCase() === nom.toLowerCase() &&
+        p.pays.toLowerCase() === pays.toLowerCase()
+      );
 
       if (existe) {
         alert("Ce plat existe déjà dans la liste !");
@@ -79,34 +75,28 @@
       }
 
       const nouvelleSpecialite = { nom, pays, continent, description };
-      platsPerso.push(nouvelleSpecialite); // Ajout du plat à la liste
+      platsPerso.push(nouvelleSpecialite);
       localStorage.setItem("platsPerso", JSON.stringify(platsPerso));
-
-      // Message de confirmation
-      alert("Plat ajouté avec succès!");
-
-      // Réinitialiser le formulaire
+      alert("Plat ajouté avec succès !");
       document.getElementById("formAjout").reset();
     }
 
-    // Exporter les plats en JSON
     function exporterPlats() {
       if (platsPerso.length === 0) {
         alert("Aucun plat à exporter !");
         return;
       }
-
-      const dataStr = JSON.stringify(platsPerso, null, 2); // joli format
+      const dataStr = JSON.stringify(platsPerso, null, 2);
       const blob = new Blob([dataStr], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const lien = document.createElement("a");
       lien.href = url;
       lien.download = "mes-plats.json";
       lien.click();
-      URL.revokeObjectURL(url); // nettoyage
+      URL.revokeObjectURL(url);
     }
 
-    let platsImportTemporaire = []; // plats temporairement chargés
+    let platsImportTemporaire = [];
 
     function importerPlats(event) {
       const file = event.target.files[0];
@@ -116,7 +106,6 @@
       reader.onload = function (e) {
         try {
           const data = JSON.parse(e.target.result);
-
           const estValide = Array.isArray(data) && data.every(p =>
             p.nom && p.pays && p.continent && p.description
           );
@@ -126,7 +115,7 @@
             return;
           }
 
-          platsImportTemporaire = data; // stocke pour confirmation
+          platsImportTemporaire = data;
           afficherPreviewImport(data);
         } catch (err) {
           alert("Erreur lors de la lecture du fichier JSON.");
@@ -138,7 +127,6 @@
     function afficherPreviewImport(data) {
       const container = document.getElementById("previewImport");
       container.innerHTML = "<h4>📦 Plats à importer :</h4>";
-
       data.forEach(p => {
         const div = document.createElement("div");
         div.innerHTML = `<strong>${p.nom}</strong> (${p.pays}) - ${p.continent}<br><em>${p.description}</em><hr>`;
@@ -162,7 +150,6 @@
       });
 
       localStorage.setItem("platsPerso", JSON.stringify(platsPerso));
-
       platsImportTemporaire = [];
       document.getElementById("previewImport").innerHTML = "";
       document.getElementById("messageImport").textContent =
