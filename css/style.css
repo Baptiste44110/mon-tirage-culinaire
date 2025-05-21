@@ -202,11 +202,11 @@ h3 {
 .import-container input[type="file"],
 .export-container button,
 .import-container button {
-  width: auto;          /* ne pas forcer la largeur à 100% */
-  max-width: 300px;     /* limite une largeur max raisonnable */
+  width: auto;
+  max-width: 300px;
   margin-left: auto;
   margin-right: auto;
-  display: block;       /* important pour que margin auto fonctionne */
+  display: block;
 }
 
 /* Styles pour la liste des plats */
@@ -271,10 +271,71 @@ h3 {
   transform: scale(1.05);
 }
 
+/* Nouveau : Classe bouton bleu (à réutiliser) */
+.btn-bleu {
+  background-color: #3498db;
+  padding: 12px 28px;
+  border-radius: 12px;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  max-width: 300px;
+  margin: 20px auto;
+  display: block;
+  text-align: center;
+}
+
+.btn-bleu:hover {
+  background-color: #2980b9;
+  transform: scale(1.05);
+}
+
+/* Styles pour la page index améliorée */
+#indexHero {
+  margin-top: 80px;
+  text-align: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(52, 152, 219, 0.2);
+  max-width: 600px;
+}
+
+#indexHero h1 {
+  font-size: 3rem;
+  color: #2980b9;
+  margin-bottom: 15px;
+}
+
+#indexHero p {
+  font-size: 1.25rem;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+#indexHero button {
+  background-color: #3498db;
+  color: white;
+  font-size: 18px;
+  padding: 14px 36px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.3);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#indexHero button:hover {
+  background-color: #2980b9;
+  transform: scale(1.05);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .card {
     width: 90%;
   }
 }
-
