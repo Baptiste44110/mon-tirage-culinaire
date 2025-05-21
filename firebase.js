@@ -21,18 +21,17 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 // Export db & auth
-export { db, auth, provider };
+export { db, auth, provider, signInWithPopup, signOut, onAuthStateChanged };
 
-// Sauvegarder la liste des plats sous un userId
-export function sauvegarderPlatsFirebase(plats, userId) {
-  return set(ref(db, `plats/${userId}`), plats);
+// 🔄 Sauvegarde liée à l'utilisateur
+export function sauvegarderPlatsFirebase(plats, user) {
+  if (!user) throw new Error("Utilisateur non connecté");
+  return set(ref(db, `plats/${user.uid}`), plats);
 }
 
-// Charger la liste des plats sous un userId
-export function chargerPlatsFirebase(userId) {
-  return get(ref(db, `plats/${userId}`)).then(snapshot => {
-    return snapshot.exists() ? snapshot.val() : [];
-  });
+export function chargerPlatsFirebase(user) {
+  if (!user) throw new Error("Utilisateur non connecté");
+  return get(ref(db, `plats/${user.uid}`)).then((snap) => snap.exists() ? snap.val() : []);
 }
 
 // Connexion Google (popup)
