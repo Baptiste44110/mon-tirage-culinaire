@@ -1,12 +1,17 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Choix du mode</title>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <h1>Bienvenue ! Choisissez votre mode</h1>
+
+  <div id="indexHero">
+    <h1>Bienvenue ! Choisissez votre mode</h1>
+    <p>Commencez en vous connectant ou continuez en invité pour explorer les plats.</p>
+  </div>
 
   <div class="container">
     <button id="btnConnecter">Se connecter avec Google</button>
@@ -22,10 +27,8 @@
     btnConnecter.onclick = () => {
       signInWithPopup(auth, provider)
         .then((result) => {
-          // Stocke en sessionStorage que l’utilisateur est connecté
           sessionStorage.setItem('mode', 'connecte');
           sessionStorage.setItem('userUid', result.user.uid);
-          // Redirige vers tirage
           window.location.href = 'tirage.html';
         })
         .catch((error) => {
@@ -34,10 +37,10 @@
     };
 
     btnInvite.onclick = () => {
-      // Mode invité simple
       sessionStorage.setItem('mode', 'invite');
       window.location.href = 'tirage.html';
     };
   </script>
+
 </body>
 </html>
