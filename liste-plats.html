@@ -17,20 +17,18 @@
   <button id="btnRetourGestion" onclick="window.location.href='gestion.html'">← Retour à la gestion des plats</button>
 
   <footer style="margin-top:20px; font-style: italic; color: #666;">
-    Connecté en tant que : <span id="userEmail">Non connecté</span>
+    Connecté en tant que : <span id="userEmail">Chargement...</span>
   </footer>
 
   <script type="module">
     import {
       onAuthStateChanged,
       chargerPlatsFirebase,
-      supprimerPlatFirebase,
       sauvegarderPlatsFirebase
     } from "./firebase.js";
 
     const userEmailSpan = document.getElementById("userEmail");
     const liste = document.getElementById("liste");
-    const mode = sessionStorage.getItem("mode") || "invite"; // "connecte" ou "invite"
 
     let plats = [];
     let currentUser = null;
@@ -41,7 +39,9 @@
         liste.innerHTML = "<p>Aucun plat enregistré.</p>";
         return;
       }
+
       plats.sort((a, b) => a.nom.toLowerCase().localeCompare(b.nom.toLowerCase()));
+
       plats.forEach((plat, index) => {
         const div = document.createElement("div");
         div.className = "card";
@@ -62,38 +62,36 @@
 
       plats.splice(index, 1);
 
-      if (mode === "connecte" && currentUser) {
+      if (currentUser) {
         await sauvegarderPlatsFirebase(plats, currentUser);
       } else {
         localStorage.setItem("platsPerso", JSON.stringify(plats));
       }
+
       afficherListe();
     }
 
     async function chargerPlats() {
-      if (mode === "connecte" && currentUser) {
+      if (currentUser) {
         plats = await chargerPlatsFirebase(currentUser);
       } else {
         plats = JSON.parse(localStorage.getItem("platsPerso")) || [];
       }
+
       afficherListe();
     }
 
     onAuthStateChanged((user) => {
       currentUser = user;
-      if (mode === "connecte") {
-        if (!user) {
-          alert("Veuillez vous connecter.");
-          window.location.href = "index.html";
-          return;
-        }
+
+      if (user) {
         userEmailSpan.textContent = user.email || user.displayName || "Utilisateur connecté";
       } else {
         userEmailSpan.textContent = "Mode invité";
       }
+
       chargerPlats();
     });
-
   </script>
 </body>
 </html>
