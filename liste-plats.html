@@ -14,9 +14,12 @@
     </div>
   </div>
 
+  <!-- Nouveau bouton pour tout supprimer -->
+  <button id="btnSupprimerTous" class="btn-bleu">Supprimer tous les plats</button>
+
+  <!-- Bouton existant pour revenir -->
   <button id="btnRetourGestion" class="btn-bleu" onclick="window.location.href='gestion.html'">← Retour à la gestion des plats</button>
   <button id="btnDeconnexion" class="btn-bleu" style="display: none;">Déconnexion</button>
-
 
   <footer style="margin-top:20px; font-style: italic; color: #666;">
     Connecté en tant que : <span id="userEmail">Chargement...</span>
@@ -33,6 +36,7 @@
 
     const userEmailSpan = document.getElementById("userEmail");
     const btnDeconnexion = document.getElementById("btnDeconnexion");
+    const btnSupprimerTous = document.getElementById("btnSupprimerTous");
     const liste = document.getElementById("liste");
     const mode = sessionStorage.getItem("mode") || "invite"; // "connecte" ou "invite"
 
@@ -75,6 +79,21 @@
 
       afficherListe();
     }
+
+    // Nouveau : supprimer tous les plats
+    btnSupprimerTous.onclick = async () => {
+      if (!confirm("Voulez-vous vraiment supprimer TOUS les plats ?")) return;
+
+      plats = [];
+
+      if (mode === "connecte" && currentUser) {
+        await sauvegarderPlatsFirebase(plats, currentUser);
+      } else {
+        localStorage.setItem("platsPerso", JSON.stringify(plats));
+      }
+
+      afficherListe();
+    };
 
     async function chargerPlats() {
       if (mode === "connecte" && currentUser) {
