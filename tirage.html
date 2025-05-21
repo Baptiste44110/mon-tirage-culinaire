@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tirage au sort culinaire</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <h1>🎯 Tirer au sort un plat à cuisiner !</h1>
+
+  <div class="container">
+    <div class="boutons">
+      <button id="btnTourner" disabled>Tirer un plat</button>
+      <button onclick="window.location.href='gestion.html'">Modifier la liste des plats</button>
+    </div>
+
+    <div class="roue-container">
+      <canvas id="roueCanvas" width="500" height="500"></canvas>
+    </div>
+
+    <div id="resultat"></div>
+  </div>
+
+  <script type="module">
+    import { auth, chargerPlatsFirebase, onAuthStateChanged } from './firebase.js';
+
+    const canvas = document.getElementById('roueCanvas');
+    const ctx = canvas.getContext('2d');
+    const rayon = canvas.width / 2;
+    const btnTourner = document.getElementById('btnTourner');
+    let plats = [];
+    let angleInitial = 0;
+
+    function couleurAleatoire(i) {
+      const couleurs = [
+        '#e6194b','#3cb44b','#ffe119','#4363d8','#f58231',
+        '#911eb4','#46f0f0','#f032e6','#bcf60c','#fabebe',
+        '#008080','#e6beff','#9a6324','#fffac8','#800000',
+        '#aaffc3','#808000','#ffd8b1','#000075','#808080'
+      ];
+      return couleurs[i % couleurs.length];
+    }
+
+    function dessinerRoue() {
+      const anglePart = (2 * Math.PI) / Math.max(plats.length, 8);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < Math.max(plats.length, 8); i++) {
+        const start = angleInitial + i * anglePart;
+        const end = start + anglePart;
+        ctx.beginPath();
+        ctx.moveTo(rayon, rayon);
+        ctx.arc(rayon, rayon, rayon, start, end);
+        ctx.fillStyle = couleurAleatoire(i);
+        ctx.fill();
+        ctx.stroke();
+      }
+    }
+
+    function afficherResultat(plat) {
+      const resultat = document.getElementById("resultat");
+      resultat.innerHTML = `
+        <h2>🍽️ ${plat.nom}</h2>
+        <p><strong>Pays :</strong> ${plat.pays}</p>
+        <p><strong>Continent :</strong> ${plat.continent}</p>
+        <p><em>${plat.description}</em></p>
+      `;
+    }
+
+    function tournerRoue() {
+      if (plats.length === 0) {
+        alert("Aucun plat enregistré !");
+        return;
+      }
+
+      document.getElementById("resultat").innerHTML = "";
+
+      let tours = 5 + Math.random() * 3;
+      const angleFinal = angleInitial + 2 * Math.PI * tours;
+      const duration = 4000;
+      const steps = 60;
+      let count = 0;
+
+      const interval = setInterval(() => {
+        count++;
+        const progress = count / steps;
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        angleInitial = angleFinal * easeOut;
+
+        dessinerRoue();
+
+        if (count >= steps) {
+          clearInterval(interval);
+          const index = Math.floor(Math.random() * plats.length);
+          afficherResultat(plats[index]);
+        }
+      }, duration / steps);
+    }
+
+    btnTourner.onclick = tournerRoue;
+
+    // Chargement des plats selon le mode
+    const mode = sessionStorage.getItem('mode');
+
+    if (mode === 'connecte') {
+      const uid = sessionStorage.getItem('userUid');
+      if (!uid) {
+        alert("Utilisateur non reconnu, veuillez vous reconnecter.");
+        window.location.href = 'choix.html';
+      } else {
+        // Charge les plats depuis Firebase
+        chargerPlatsFirebase(uid).then(platsCloud => {
+          plats = platsCloud;
+          if (plats.length === 0) {
+            alert("Aucun plat dans le cloud, ajoutez-en dans la gestion.");
+          }
+          btnTourner.disabled = false;
+          dessinerRoue();
+        }).catch(err => {
+          alert("Erreur lors du chargement des plats depuis le cloud.");
+          console.error(err);
+        });
+      }
+    } else if (mode === 'invite') {
+      // Charge les plats locaux
+      plats = JSON.parse(localStorage.getItem('platsPerso')) || [];
+      if (plats.length === 0) {
+        alert("Aucun plat local trouvé, ajoutez-en dans la gestion.");
+      }
+      btnTourner.disabled = false;
+      dessinerRoue();
+    } else {
+      // Pas de mode défini : retourne au choix
+      window.location.href = 'choix.html';
+    }
+  </script>
+</body>
+</html>
