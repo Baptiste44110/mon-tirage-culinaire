@@ -2,111 +2,42 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Tirage au sort culinaire</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Choix du mode</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-  <h1>🎯 Tirer au sort un plat à cuisiner !</h1>
+  <h1>Bienvenue ! Choisissez votre mode</h1>
 
   <div class="container">
-    <div class="boutons">
-      <button onclick="tournerRoue()">Tirer un plat</button>
-      <button onclick="window.location.href='gestion.html'">Modifier la liste des plats</button>
-    </div>
-
-    <div class="roue-container">
-      <div id="fleche"></div>
-      <canvas id="roueCanvas" width="500" height="500"></canvas>
-    </div>
-
-    <div id="resultat"></div>
+    <button id="btnConnecter">Se connecter avec Google</button>
+    <button id="btnInvite">Continuer en invité</button>
   </div>
 
-  <script>
-    const canvas = document.getElementById('roueCanvas');
-    const ctx = canvas.getContext('2d');
-    const rayon = canvas.width / 2;
-    let plats = JSON.parse(localStorage.getItem("platsPerso")) || [];
-    let angleInitial = 0;
+  <script type="module">
+    import { auth, provider, signInWithPopup } from './firebase.js';
 
-    function couleurAleatoire(i) {
-      const couleurs = [
-        '#e6194b','#3cb44b','#ffe119','#4363d8','#f58231',
-        '#911eb4','#46f0f0','#f032e6','#bcf60c','#fabebe',
-        '#008080','#e6beff','#9a6324','#fffac8','#800000',
-        '#aaffc3','#808000','#ffd8b1','#000075','#808080'
-      ];
-      return couleurs[i % couleurs.length];
-    }
+    const btnConnecter = document.getElementById('btnConnecter');
+    const btnInvite = document.getElementById('btnInvite');
 
-    function dessinerRoue() {
-      const anglePart = (2 * Math.PI) / Math.max(plats.length, 8);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < Math.max(plats.length, 8); i++) {
-        const start = angleInitial + i * anglePart;
-        const end = start + anglePart;
-        ctx.beginPath();
-        ctx.moveTo(rayon, rayon);
-        ctx.arc(rayon, rayon, rayon, start, end);
-        ctx.fillStyle = couleurAleatoire(i);
-        ctx.fill();
-        ctx.stroke();
-      }
-    }
+    btnConnecter.onclick = () => {
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          // Stocke en sessionStorage que l’utilisateur est connecté
+          sessionStorage.setItem('mode', 'connecte');
+          sessionStorage.setItem('userUid', result.user.uid);
+          // Redirige vers tirage
+          window.location.href = 'tirage.html';
+        })
+        .catch((error) => {
+          alert("Erreur lors de la connexion : " + error.message);
+        });
+    };
 
-    function tournerRoue() {
-      if (plats.length === 0) {
-        alert("Aucun plat enregistré !");
-        return;
-      }
-
-      document.getElementById("resultat").innerHTML = "";
-
-      let tours = 5 + Math.random() * 3;
-      const angleFinal = angleInitial + 2 * Math.PI * tours;
-      const duration = 4000;
-      const steps = 60;
-      let count = 0;
-
-      const interval = setInterval(() => {
-        count++;
-        const progress = count / steps;
-        const easeOut = 1 - Math.pow(1 - progress, 3);
-        angleInitial = angleFinal * easeOut;
-
-        dessinerRoue();
-
-        if (count >= steps) {
-          clearInterval(interval);
-          const index = Math.floor(Math.random() * plats.length);
-          afficherResultat(plats[index]);
-        }
-      }, duration / steps);
-    }
-
-    function afficherResultat(plat) {
-      const resultat = document.getElementById("resultat");
-      const son = document.getElementById("sonTirage");
-      son.currentTime = 0;
-      son.play();
-
-      resultat.innerHTML = `
-        <h2>🍽️ ${plat.nom}</h2>
-        <p><strong>Pays :</strong> ${plat.pays}</p>
-        <p><strong>Continent :</strong> ${plat.continent}</p>
-        <p><em>${plat.description}</em></p>
-      `;
-
-      resultat.classList.remove("animated");
-      void resultat.offsetWidth;
-      resultat.classList.add("animated");
-    }
-
-    dessinerRoue();
+    btnInvite.onclick = () => {
+      // Mode invité simple
+      sessionStorage.setItem('mode', 'invite');
+      window.location.href = 'tirage.html';
+    };
   </script>
-
-  <audio id="sonTirage">
-    <source src="notification.wav" type="audio/wav" />
-  </audio>
 </body>
 </html>
