@@ -15,6 +15,7 @@
   </div>
 
   <button id="btnRetourGestion" onclick="window.location.href='gestion.html'">← Retour à la gestion des plats</button>
+  <button id="btnDeconnexion" style="margin-left: 10px; display: none;">Déconnexion</button>
 
   <footer style="margin-top:20px; font-style: italic; color: #666;">
     Connecté en tant que : <span id="userEmail">Chargement...</span>
@@ -22,13 +23,17 @@
 
   <script type="module">
     import {
+      auth,
       onAuthStateChanged,
+      signOut,
       chargerPlatsFirebase,
       sauvegarderPlatsFirebase
     } from "./firebase.js";
 
     const userEmailSpan = document.getElementById("userEmail");
+    const btnDeconnexion = document.getElementById("btnDeconnexion");
     const liste = document.getElementById("liste");
+    const mode = sessionStorage.getItem("mode") || "invite"; // "connecte" ou "invite"
 
     let plats = [];
     let currentUser = null;
@@ -41,7 +46,6 @@
       }
 
       plats.sort((a, b) => a.nom.toLowerCase().localeCompare(b.nom.toLowerCase()));
-
       plats.forEach((plat, index) => {
         const div = document.createElement("div");
         div.className = "card";
@@ -62,7 +66,7 @@
 
       plats.splice(index, 1);
 
-      if (currentUser) {
+      if (mode === "connecte" && currentUser) {
         await sauvegarderPlatsFirebase(plats, currentUser);
       } else {
         localStorage.setItem("platsPerso", JSON.stringify(plats));
@@ -72,22 +76,34 @@
     }
 
     async function chargerPlats() {
-      if (currentUser) {
+      if (mode === "connecte" && currentUser) {
         plats = await chargerPlatsFirebase(currentUser);
       } else {
         plats = JSON.parse(localStorage.getItem("platsPerso")) || [];
       }
-
       afficherListe();
     }
 
-    onAuthStateChanged((user) => {
+    btnDeconnexion.onclick = async () => {
+      await signOut(auth);
+      sessionStorage.clear(); // Nettoie le mode et l'UID
+      window.location.href = "index.html";
+    };
+
+    onAuthStateChanged(auth, (user) => {
       currentUser = user;
 
-      if (user) {
+      if (mode === "connecte") {
+        if (!user) {
+          alert("Veuillez vous reconnecter.");
+          window.location.href = "index.html";
+          return;
+        }
         userEmailSpan.textContent = user.email || user.displayName || "Utilisateur connecté";
+        btnDeconnexion.style.display = "inline-block";
       } else {
         userEmailSpan.textContent = "Mode invité";
+        btnDeconnexion.style.display = "none";
       }
 
       chargerPlats();
