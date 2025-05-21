@@ -22,27 +22,25 @@
     <div id="resultat"></div>
   </div>
 
-  <script>
-    // Vérifier si un mode est défini en sessionStorage
+  <footer id="footerUser" style="margin-top:20px; font-style: italic; color: #666;">
+    Connecté en tant que : <span id="userEmail">Non connecté</span>
+  </footer>
+
+  <script type="module">
+    import { onAuthStateChangedListener, chargerPlatsFirebase } from './js/firebase.js';
+
+    // Récupération du mode (connecté / invité)
     const mode = sessionStorage.getItem('mode'); // 'invite' ou 'connecte'
     if (!mode) {
-      // Pas de mode choisi, redirection vers la page de choix (index.html)
       window.location.href = 'index.html';
-    }
-
-    let plats = [];
-
-    if (mode === 'connecte') {
-      // Récupérer les plats synchronisés en localStorage (exemple)
-      plats = JSON.parse(localStorage.getItem('platsCloud')) || [];
-    } else if (mode === 'invite') {
-      plats = JSON.parse(localStorage.getItem('platsPerso')) || [];
     }
 
     const canvas = document.getElementById('roueCanvas');
     const ctx = canvas.getContext('2d');
     const rayon = canvas.width / 2;
     let angleInitial = 0;
+    let plats = [];
+    const userEmailSpan = document.getElementById('userEmail');
 
     function couleurAleatoire(i) {
       const couleurs = [
@@ -117,7 +115,27 @@
       resultat.classList.add("animated");
     }
 
-    dessinerRoue();
+    // Chargement des plats selon le mode
+    async function chargerPlats() {
+      if (mode === 'connecte') {
+        onAuthStateChangedListener(async (user) => {
+          if (user) {
+            plats = await chargerPlatsFirebase(user);
+            dessinerRoue();
+            userEmailSpan.textContent = user.email || user.displayName || "Utilisateur connecté";
+          } else {
+            userEmailSpan.textContent = "Non connecté";
+            window.location.href = 'index.html';
+          }
+        });
+      } else if (mode === 'invite') {
+        plats = JSON.parse(localStorage.getItem('platsPerso')) || [];
+        dessinerRoue();
+        userEmailSpan.textContent = "Mode invité";
+      }
+    }
+
+    chargerPlats();
   </script>
 
   <audio id="sonTirage">
