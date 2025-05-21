@@ -1,6 +1,7 @@
-// Import des modules Firebase
+// Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 
 // Config Firebase
 const firebaseConfig = {
@@ -13,20 +14,38 @@ const firebaseConfig = {
   appId: "1:22284347001:web:d402b190f8c91e70fc56a8"
 };
 
-// Initialisation Firebase
+// Init Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-// Fonctions utilitaires
+// Export db & auth
+export { db, auth, provider };
 
-// Sauvegarder la liste des plats
-export function sauvegarderPlatsFirebase(plats, userId = "default_user") {
+// Sauvegarder la liste des plats sous un userId
+export function sauvegarderPlatsFirebase(plats, userId) {
   return set(ref(db, `plats/${userId}`), plats);
 }
 
-// Charger la liste des plats
-export function chargerPlatsFirebase(userId = "default_user") {
+// Charger la liste des plats sous un userId
+export function chargerPlatsFirebase(userId) {
   return get(ref(db, `plats/${userId}`)).then(snapshot => {
     return snapshot.exists() ? snapshot.val() : [];
   });
+}
+
+// Connexion Google (popup)
+export function signInWithGoogle() {
+  return signInWithPopup(auth, provider);
+}
+
+// Déconnexion
+export function signOutUser() {
+  return signOut(auth);
+}
+
+// Ecoute l’état de connexion
+export function onAuthStateChangedListener(callback) {
+  return onAuthStateChanged(auth, callback);
 }
