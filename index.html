@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -8,15 +8,17 @@
 </head>
 <body>
 
-  <div id="indexHero">
+  <section id="indexHero">
     <h1>Bienvenue ! Choisissez votre mode</h1>
     <p>Commencez en vous connectant ou continuez en invité pour explorer les plats.</p>
-  </div>
 
-  <div class="container">
-    <button id="btnConnecter">Se connecter avec Google</button>
-    <button id="btnInvite">Continuer en invité</button>
-  </div>
+    <div class="container">
+      <div class="boutons">
+        <button id="btnConnecter">Se connecter avec Google</button>
+        <button id="btnInvite">Continuer en invité</button>
+      </div>
+    </div>
+  </section>
 
   <script type="module">
     import { auth, provider, signInWithPopup } from './firebase.js';
