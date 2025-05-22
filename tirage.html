@@ -20,16 +20,29 @@
     </div>
 
     <div id="resultat"></div>
+
+    <div id="validationSection" style="display: none; margin-top: 20px;">
+      <input type="text" id="prenomInput" placeholder="Entrez votre prénom" />
+      <button id="validerChoix" class="btn-bleu">Valider le plat de la semaine</button>
+    </div>
   </div>
 
   <footer id="footerUser" style="margin-top:20px; font-style: italic; color: #666;">
     Connecté en tant que : <span id="userEmail">Non connecté</span>
   </footer>
 
-  <script type="module">
-    import { onAuthStateChangedListener, chargerPlatsFirebase } from './firebase.js';
+  <audio id="sonTirage">
+    <source src="notification.wav" type="audio/wav" />
+  </audio>
 
-    // Récupération du mode (connecté / invité)
+  <script type="module">
+    import {
+      onAuthStateChangedListener,
+      chargerPlatsFirebase,
+      chargerHistoriqueFirebase,
+      sauvegarderHistoriqueFirebase
+    } from './firebase.js';
+
     const mode = sessionStorage.getItem('mode'); // 'invite' ou 'connecte'
     if (!mode) {
       window.location.href = 'index.html';
@@ -38,9 +51,21 @@
     const canvas = document.getElementById('roueCanvas');
     const ctx = canvas.getContext('2d');
     const rayon = canvas.width / 2;
+    const userEmailSpan = document.getElementById('userEmail');
+    const validationSection = document.getElementById('validationSection');
+    const boutonValider = document.getElementById('validerChoix');
     let angleInitial = 0;
     let plats = [];
-    const userEmailSpan = document.getElementById('userEmail');
+    let currentUser = null;
+    let platChoisi = null;
+
+    Date.prototype.getWeekNumber = function () {
+      const d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+      const dayNum = d.getUTCDay() || 7;
+      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+      return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    };
 
     function couleurAleatoire(i) {
       const couleurs = [
@@ -74,6 +99,7 @@
       }
 
       document.getElementById("resultat").innerHTML = "";
+      validationSection.style.display = "none";
 
       let tours = 5 + Math.random() * 3;
       const angleFinal = angleInitial + 2 * Math.PI * tours;
@@ -92,7 +118,9 @@
         if (count >= steps) {
           clearInterval(interval);
           const index = Math.floor(Math.random() * plats.length);
-          afficherResultat(plats[index]);
+          platChoisi = plats[index];
+          afficherResultat(platChoisi);
+          validationSection.style.display = "block";
         }
       }, duration / steps);
     }
@@ -115,11 +143,47 @@
       resultat.classList.add("animated");
     }
 
-    // Chargement des plats selon le mode
+    boutonValider.onclick = async () => {
+      const prenom = document.getElementById("prenomInput").value.trim();
+      if (!prenom) {
+        alert("Veuillez entrer votre prénom");
+        return;
+      }
+
+      const semaine = new Date().getWeekNumber();
+      const annee = new Date().getFullYear();
+      const date = new Date().toISOString();
+
+      const nouvelleEntree = {
+        prenom,
+        plat: platChoisi,
+        semaine,
+        annee,
+        date
+      };
+
+      let historique = [];
+
+      if (mode === "connecte" && currentUser) {
+        historique = await chargerHistoriqueFirebase(currentUser);
+        historique.push(nouvelleEntree);
+        await sauvegarderHistoriqueFirebase(historique, currentUser);
+      } else {
+        historique = JSON.parse(localStorage.getItem("historiqueTirages")) || [];
+        historique.push(nouvelleEntree);
+        localStorage.setItem("historiqueTirages", JSON.stringify(historique));
+      }
+
+      alert("Plat validé pour la semaine !");
+      validationSection.style.display = "none";
+      document.getElementById("prenomInput").value = "";
+    };
+
     async function chargerPlats() {
       if (mode === 'connecte') {
         onAuthStateChangedListener(async (user) => {
           if (user) {
+            currentUser = user;
             plats = await chargerPlatsFirebase(user);
             dessinerRoue();
             userEmailSpan.textContent = user.email || user.displayName || "Utilisateur connecté";
@@ -137,9 +201,5 @@
 
     chargerPlats();
   </script>
-
-  <audio id="sonTirage">
-    <source src="notification.wav" type="audio/wav" />
-  </audio>
 </body>
 </html>
