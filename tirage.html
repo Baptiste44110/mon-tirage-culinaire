@@ -4,82 +4,6 @@
   <meta charset="UTF-8" />
   <title>Tirage au sort culinaire</title>
   <link rel="stylesheet" href="css/style.css" />
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: auto;
-    }
-
-    .boutons {
-      margin-bottom: 20px;
-    }
-
-    .roue-container {
-      position: relative;
-      width: 100%;
-      margin: auto;
-    }
-
-    canvas {
-      display: block;
-      margin: auto;
-    }
-
-    #fleche {
-      position: absolute;
-      top: 240px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 0;
-      height: 0;
-      border-left: 15px solid transparent;
-      border-right: 15px solid transparent;
-      border-bottom: 30px solid red;
-    }
-
-    #resultat {
-      margin-top: 20px;
-      margin-bottom: 10px;
-    }
-
-    #validationSection {
-      display: none;
-      margin-bottom: 20px;
-    }
-
-    #prenomInput {
-      padding: 8px;
-      margin-right: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    .btn-bleu {
-      background-color: #007BFF;
-      color: white;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .btn-bleu:hover {
-      background-color: #0056b3;
-    }
-
-    footer {
-      margin-top: 30px;
-      font-style: italic;
-      color: #666;
-    }
-  </style>
 </head>
 <body>
   <h1>🎯 Tirer au sort un plat à cuisiner !</h1>
@@ -87,23 +11,23 @@
   <div class="container">
     <div class="boutons">
       <button id="boutonTirer">Tirer un plat</button>
-      <button onclick="window.location.href='gestion.html'">Modifier la liste des plats</button>
+      <button id="btnModifierListe">Modifier la liste des plats</button>
     </div>
 
     <div class="roue-container">
       <div id="fleche"></div>
-      <canvas id="roueCanvas" width="400" height="400"></canvas>
+      <canvas id="roueCanvas" width="500" height="500"></canvas>
     </div>
 
     <div id="resultat"></div>
 
-    <div id="validationSection">
+    <div id="validationSection" style="display: none; margin-top: 20px;">
       <input type="text" id="prenomInput" placeholder="Entrez votre prénom" />
       <button id="validerChoix" class="btn-bleu">Valider le plat de la semaine</button>
     </div>
   </div>
 
-  <footer id="footerUser">
+  <footer id="footerUser" style="margin-top:20px; font-style: italic; color: #666;">
     Connecté en tant que : <span id="userEmail">Non connecté</span>
   </footer>
 
@@ -120,20 +44,33 @@
     } from './firebase.js';
 
     const mode = sessionStorage.getItem('mode');
-    if (!mode) window.location.href = 'index.html';
+    if (!mode) {
+      window.location.href = 'index.html';
+    }
 
     const canvas = document.getElementById('roueCanvas');
     const ctx = canvas.getContext('2d');
     const rayon = canvas.width / 2;
     const userEmailSpan = document.getElementById('userEmail');
-    const boutonTirer = document.getElementById('boutonTirer');
-    const boutonValider = document.getElementById('validerChoix');
     const validationSection = document.getElementById('validationSection');
+    const boutonValider = document.getElementById('validerChoix');
+    const boutonTirer = document.getElementById('boutonTirer');
+    const boutonModifier = document.getElementById('btnModifierListe');
+
+    let angleInitial = 0;
     let plats = [];
     let currentUser = null;
-    let angleInitial = 0;
     let platChoisi = null;
 
+    // Gestion du clic sur "Modifier la liste des plats"
+    boutonModifier.addEventListener("click", () => {
+      window.location.href = 'gestion.html';
+    });
+
+    // Gestion du clic sur "Tirer un plat"
+    boutonTirer.addEventListener("click", tournerRoue);
+
+    // Numéro de semaine
     Date.prototype.getWeekNumber = function () {
       const d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
       const dayNum = d.getUTCDay() || 7;
@@ -167,7 +104,7 @@
       }
     }
 
-    boutonTirer.onclick = () => {
+    function tournerRoue() {
       if (plats.length === 0) {
         alert("Aucun plat enregistré !");
         return;
@@ -198,7 +135,7 @@
           validationSection.style.display = "block";
         }
       }, duration / steps);
-    };
+    }
 
     function afficherResultat(plat) {
       const resultat = document.getElementById("resultat");
@@ -212,6 +149,10 @@
         <p><strong>Continent :</strong> ${plat.continent}</p>
         <p><em>${plat.description}</em></p>
       `;
+
+      resultat.classList.remove("animated");
+      void resultat.offsetWidth;
+      resultat.classList.add("animated");
     }
 
     boutonValider.onclick = async () => {
@@ -263,7 +204,7 @@
             window.location.href = 'index.html';
           }
         });
-      } else {
+      } else if (mode === 'invite') {
         plats = JSON.parse(localStorage.getItem('platsPerso')) || [];
         dessinerRoue();
         userEmailSpan.textContent = "Mode invité";
