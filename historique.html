@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Historique des plats</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <h1>📜 Historique des plats de la semaine</h1>
+
+  <div class="container">
+    <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+      <thead>
+        <tr>
+          <th>Prénom</th>
+          <th>Semaine</th>
+          <th>Année</th>
+          <th>Plat</th>
+          <th>Pays</th>
+          <th>Continent</th>
+        </tr>
+      </thead>
+      <tbody id="tableHistorique">
+        <tr><td colspan="6">Chargement...</td></tr>
+      </tbody>
+    </table>
+
+    <button onclick="window.location.href='gestion.html'" class="btn-bleu" style="margin-top: 20px;">← Retour à la gestion</button>
+  </div>
+
+  <script type="module">
+    import { db } from './firebase.js';
+    import { get, ref } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+    const tableBody = document.getElementById("tableHistorique");
+
+    async function chargerHistoriqueTousUtilisateurs() {
+      const snap = await get(ref(db, 'historique'));
+      const data = snap.exists() ? snap.val() : {};
+
+      const lignes = [];
+
+      for (const uid in data) {
+        const historique = data[uid];
+        historique.forEach((entry) => {
+          lignes.push(`
+            <tr>
+              <td>${entry.prenom || "?"}</td>
+              <td>${entry.semaine}</td>
+              <td>${entry.annee}</td>
+              <td>${entry.plat.nom}</td>
+              <td>${entry.plat.pays}</td>
+              <td>${entry.plat.continent}</td>
+            </tr>
+          `);
+        });
+      }
+
+      tableBody.innerHTML = lignes.length
+        ? lignes.join("")
+        : '<tr><td colspan="6">Aucune entrée dans l’historique.</td></tr>';
+    }
+
+    chargerHistoriqueTousUtilisateurs();
+  </script>
+</body>
+</html>
