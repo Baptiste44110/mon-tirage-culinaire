@@ -10,14 +10,19 @@
 <body>
 
   <div id="indexHero">
-    <h1>Bienvenue !</h1>
-    <p>Commencez en vous connectant ou continuez en invité pour explorer les plats.</p>
-  </div>
+  <h1>Bienvenue !</h1>
+  <p>Chaque semaine, découvrez un plat du monde au hasard et explorez de nouvelles recettes inspirées de différentes cultures.</p>
+</div>
 
-  <div class="container boutons">
-    <button id="btnConnecter"><i class="fa-brands fa-google"></i> Se connecter avec Google</button>
-    <button id="btnInvite"><i class="fa-solid fa-user-secret"></i> Continuer en invité</button>
-  </div>
+<div class="container boutons">
+  <button class="btn-hero" id="btnConnecter">
+    <i class="fa-brands fa-google"></i> Se connecter avec Google
+  </button>
+  <button class="btn-hero" id="btnInvite">
+    <i class="fa-solid fa-user-secret"></i> Continuer en invité
+  </button>
+</div>
+
 
   <script type="module">
     import { auth, provider, signInWithPopup } from './firebase.js';
