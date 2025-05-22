@@ -22,18 +22,18 @@
         <option value="Océanie">Océanie</option>
       </select><br>
       <textarea id="description" placeholder="Description du plat" required></textarea><br>
-      <button type="submit">Ajouter un plat</button>
+      <button type="submit" class="btn-vert">Ajouter un plat</button>
     </form>
   </div>
 
   <!-- Bouton pour voir la liste complète des plats -->
   <br>
-  <button onclick="window.location.href='liste-plats.html'">Voir la liste complète des plats</button>
+  <button class="btn-vert" onclick="window.location.href='liste-plats.html'">Voir la liste complète des plats</button>
 
   <!-- Export -->
   <div class="export-container">
     <h3>📤 Exporter vos plats personnalisés</h3>
-    <button onclick="exporterPlats()">📥 Exporter en JSON</button>
+    <button class="btn-vert" onclick="exporterPlats()">📥 Exporter en JSON</button>
   </div>
 
   <!-- Import -->
@@ -42,16 +42,16 @@
     <input type="file" accept=".json" onchange="importerPlats(event)">
     <p id="messageImport" style="color: green;"></p>
     <div id="previewImport"></div>
-    <button onclick="confirmerImport()">✅ Confirmer l'import</button>
+    <button class="btn-vert" onclick="confirmerImport()">✅ Confirmer l'import</button>
   </div>
 
   <!-- Bouton historique -->
   <br>
-  <button onclick="window.location.href='historique.html'">Voir l'historique des plats</button>
+  <button class="btn-vert" onclick="window.location.href='historique.html'">Voir l'historique des plats</button>
   
   <!-- Retour à la roue -->
   <br>
-  <button onclick="window.location.href='tirage.html'">Retour à la roue</button>
+  <button class="btn-vert" onclick="window.location.href='tirage.html'">Retour à la roue</button>
 
   <footer id="footerUser" style="margin-top:20px; font-style: italic; color: #666;">
     Connecté en tant que : <span id="userEmail">Non connecté</span>
