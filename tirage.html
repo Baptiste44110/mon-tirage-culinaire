@@ -10,8 +10,8 @@
 
   <div class="container">
     <div class="boutons">
-      <button onclick="tournerRoue()">Tirer un plat</button>
-      <button onclick="window.location.href='gestion.html'">Modifier la liste des plats</button>
+      <button id="boutonTirer">Tirer un plat</button>
+      <button id="btnModifierListe">Modifier la liste des plats</button>
     </div>
 
     <div class="roue-container">
@@ -43,7 +43,7 @@
       sauvegarderHistoriqueFirebase
     } from './firebase.js';
 
-    const mode = sessionStorage.getItem('mode'); // 'invite' ou 'connecte'
+    const mode = sessionStorage.getItem('mode');
     if (!mode) {
       window.location.href = 'index.html';
     }
@@ -54,11 +54,23 @@
     const userEmailSpan = document.getElementById('userEmail');
     const validationSection = document.getElementById('validationSection');
     const boutonValider = document.getElementById('validerChoix');
+    const boutonTirer = document.getElementById('boutonTirer');
+    const boutonModifier = document.getElementById('btnModifierListe');
+
     let angleInitial = 0;
     let plats = [];
     let currentUser = null;
     let platChoisi = null;
 
+    // Gestion du clic sur "Modifier la liste des plats"
+    boutonModifier.addEventListener("click", () => {
+      window.location.href = 'gestion.html';
+    });
+
+    // Gestion du clic sur "Tirer un plat"
+    boutonTirer.addEventListener("click", tournerRoue);
+
+    // Numéro de semaine
     Date.prototype.getWeekNumber = function () {
       const d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
       const dayNum = d.getUTCDay() || 7;
