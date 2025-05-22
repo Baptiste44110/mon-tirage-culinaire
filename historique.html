@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -18,10 +18,11 @@
           <th>Plat</th>
           <th>Pays</th>
           <th>Continent</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody id="tableHistorique">
-        <tr><td colspan="6">Chargement...</td></tr>
+        <tr><td colspan="7">Chargement...</td></tr>
       </tbody>
     </table>
 
@@ -30,19 +31,20 @@
 
   <script type="module">
     import { db } from './firebase.js';
-    import { get, ref } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+    import { get, ref, set } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
     const tableBody = document.getElementById("tableHistorique");
+    let historiqueData = {}; // stocke toutes les données lues de Firebase
 
     async function chargerHistoriqueTousUtilisateurs() {
       const snap = await get(ref(db, 'historique'));
-      const data = snap.exists() ? snap.val() : {};
+      historiqueData = snap.exists() ? snap.val() : {};
 
       const lignes = [];
 
-      for (const uid in data) {
-        const historique = data[uid];
-        historique.forEach((entry) => {
+      for (const uid in historiqueData) {
+        const historique = historiqueData[uid];
+        historique.forEach((entry, index) => {
           lignes.push(`
             <tr>
               <td>${entry.prenom || "?"}</td>
@@ -51,6 +53,9 @@
               <td>${entry.plat.nom}</td>
               <td>${entry.plat.pays}</td>
               <td>${entry.plat.continent}</td>
+              <td>
+                <button data-uid="${uid}" data-index="${index}" class="btn-supprimer">Supprimer</button>
+              </td>
             </tr>
           `);
         });
@@ -58,7 +63,40 @@
 
       tableBody.innerHTML = lignes.length
         ? lignes.join("")
-        : '<tr><td colspan="6">Aucune entrée dans l’historique.</td></tr>';
+        : '<tr><td colspan="7">Aucune entrée dans l’historique.</td></tr>';
+
+      // Ajouter événements sur les boutons supprimer
+      document.querySelectorAll('.btn-supprimer').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const uid = e.target.getAttribute('data-uid');
+          const index = parseInt(e.target.getAttribute('data-index'));
+          if (confirm("Voulez-vous vraiment supprimer cette entrée ?")) {
+            await supprimerEntree(uid, index);
+          }
+        });
+      });
+    }
+
+    async function supprimerEntree(uid, index) {
+      try {
+        const userHistorique = historiqueData[uid];
+        if (!userHistorique || index < 0 || index >= userHistorique.length) {
+          alert("Entrée non trouvée.");
+          return;
+        }
+
+        // Supprimer l'entrée du tableau
+        userHistorique.splice(index, 1);
+
+        // Écrire le tableau mis à jour dans Firebase
+        await set(ref(db, `historique/${uid}`), userHistorique);
+
+        alert("Entrée supprimée avec succès !");
+        chargerHistoriqueTousUtilisateurs(); // Recharger pour mise à jour affichage
+      } catch (error) {
+        console.error("Erreur lors de la suppression :", error);
+        alert("Erreur lors de la suppression.");
+      }
     }
 
     chargerHistoriqueTousUtilisateurs();
