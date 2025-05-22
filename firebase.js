@@ -43,6 +43,20 @@ export function signInWithGoogle() {
 export function signOutUser() {
   return signOut(auth);
 }
+// 🔁 Sauvegarder l'historique des plats par utilisateur
+export function sauvegarderHistoriqueFirebase(historique, user) {
+  if (!user) throw new Error("Utilisateur non connecté");
+  return set(ref(db, `historique/${user.uid}`), historique);
+}
+
+// 📥 Charger l'historique des plats d'un utilisateur
+export function chargerHistoriqueFirebase(user) {
+  if (!user) throw new Error("Utilisateur non connecté");
+  return get(ref(db, `historique/${user.uid}`)).then((snap) =>
+    snap.exists() ? snap.val() : []
+  );
+}
+
 
 // Ecoute l’état de connexion
 export function onAuthStateChangedListener(callback) {
