@@ -1,5 +1,7 @@
+/* Import de la police */
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap');
 
+/* ------ BASE ------ */
 body {
   font-family: 'Quicksand', sans-serif;
   background: linear-gradient(135deg, #fffaf0, #f0f4f8);
@@ -10,6 +12,8 @@ body {
   align-items: center;
   min-height: 100vh;
   color: #333;
+  opacity: 0;
+  animation: fadeInBody 0.6s ease-out forwards;
 }
 
 h1 {
@@ -19,6 +23,12 @@ h1 {
   color: #e74c3c;
 }
 
+h3 {
+  color: #e74c3c;
+  margin-bottom: 15px;
+}
+
+/* ------ CONTAINERS ------ */
 .container {
   display: flex;
   justify-content: center;
@@ -34,34 +44,70 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
-  flex-shrink: 0;
-  margin: 0;
+  gap: 20px;
+  margin-top: 40px;
 }
 
-button {
-  background-color: #27ae60;
-  color: white;
-  border: none;
-  border-radius: 12px;
+/* ------ BOUTONS REUTILISABLES ------ */
+.btn {
   padding: 12px 24px;
+  border-radius: 12px;
+  border: none;
   font-size: 16px;
+  color: white;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  margin-top: 15px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-button:hover {
+.btn-vert {
+  background-color: #27ae60;
+}
+.btn-vert:hover {
   background-color: #219150;
   transform: scale(1.05);
 }
 
-.roue-container {
-  position: relative;
-  width: 500px;
-  height: 500px;
-  flex-shrink: 0;
+.btn-bleu {
+  background-color: #3498db;
+}
+.btn-bleu:hover {
+  background-color: #2980b9;
+  transform: scale(1.05);
+}
+
+.btn-rouge {
+  background-color: #e74c3c;
+}
+.btn-rouge:hover {
+  background-color: #c0392b;
+  transform: scale(1.05);
+}
+
+/* Boutons spécifiques */
+.btn-hero {
+  @extend .btn;
+  font-size: 18px;
+  padding: 14px 36px;
+  background-color: #3498db;
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.3);
+}
+
+.btn-hero:hover {
+  background-color: #2980b9;
+}
+
+/* ------ AUTRES ELEMENTS ------ */
+canvas {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  border-radius: 50%;
+  background-color: white;
+  display: block;
+  margin: 0 auto;
 }
 
 #fleche {
@@ -77,14 +123,7 @@ button:hover {
   z-index: 10;
 }
 
-canvas {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-  border-radius: 50%;
-  background-color: white;
-  display: block;
-  margin: 0 auto;
-}
-
+/* Résultat */
 #resultat {
   background: #ffffffcc;
   border-radius: 12px;
@@ -106,110 +145,7 @@ canvas {
   animation: pop 0.6s ease-out;
 }
 
-@keyframes pop {
-  0% { transform: scale(0.8); opacity: 0; }
-  60% { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(1); }
-}
-
-/* Responsive mobile */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .boutons {
-    flex-direction: row;
-    margin-bottom: 20px;
-    gap: 15px;
-  }
-
-  .roue-container {
-    width: 350px;
-    height: 350px;
-  }
-
-  canvas {
-    width: 100% !important;
-    height: auto !important;
-  }
-
-  #resultat {
-    width: 90%;
-    margin-top: 20px;
-  }
-}
-
-/* Gestion des plats */
-.form-container, .export-container, .import-container {
-  margin-top: 30px;
-  width: 90%;
-  max-width: 600px;
-  background: #fff;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-.export-container,
-.import-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.export-container button,
-.import-container button,
-.import-container input[type="file"] {
-  margin: 10px 0;
-}
-
-input, textarea, select {
-  padding: 10px;
-  margin: 10px 0;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  width: 100%;
-  box-sizing: border-box;
-  font-family: 'Quicksand', sans-serif;
-  font-size: 16px;
-  resize: vertical;
-}
-
-textarea {
-  min-height: 80px;
-}
-
-#importPreview, #messageImport {
-  max-width: 600px;
-  margin: 15px auto;
-  text-align: left;
-  font-size: 14px;
-  color: #555;
-}
-
-#importPreview div {
-  margin-bottom: 10px;
-}
-
-h3 {
-  color: #e74c3c;
-  margin-bottom: 15px;
-}
-
-.import-container input[type="file"],
-.export-container button,
-.import-container button {
-  width: auto;
-  max-width: 300px;
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-}
-
-/* Styles pour la liste des plats */
+/* Cards */
 .card {
   background: white;
   border-radius: 12px;
@@ -221,79 +157,26 @@ h3 {
   flex-direction: column;
   gap: 8px;
 }
-
 .card h3 {
   margin: 0 0 8px 0;
-  color: #e74c3c;
 }
-
 .card p {
   margin: 4px 0;
   color: #555;
 }
-
 .card button {
-  align-self: flex-start;
+  @extend .btn;
   background-color: #e74c3c;
-  padding: 8px 16px;
-  border-radius: 12px;
-  border: none;
-  color: white;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: background-color 0.3s ease, transform 0.2s ease;
   font-size: 14px;
+  padding: 8px 16px;
+  align-self: flex-start;
   margin-top: auto;
 }
-
 .card button:hover {
   background-color: #c0392b;
-  transform: scale(1.05);
 }
 
-#btnRetourGestion {
-  margin: 30px auto 50px auto;
-  display: block;
-  background-color: #3498db;
-  padding: 12px 28px;
-  border-radius: 12px;
-  border: none;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  max-width: 300px;
-}
-
-#btnRetourGestion:hover {
-  background-color: #2980b9;
-  transform: scale(1.05);
-}
-
-/* Nouveau : Classe bouton bleu (à réutiliser) */
-.btn-bleu {
-  background-color: #3498db;
-  padding: 12px 28px;
-  border-radius: 12px;
-  border: none;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  max-width: 300px;
-  margin: 20px auto;
-  display: block;
-  text-align: center;
-}
-
-.btn-bleu:hover {
-  background-color: #2980b9;
-  transform: scale(1.05);
-}
-
-/* Styles pour la page index améliorée */
+/* Page index */
 #indexHero {
   margin-top: 80px;
   text-align: center;
@@ -303,43 +186,105 @@ h3 {
   box-shadow: 0 10px 30px rgba(52, 152, 219, 0.2);
   max-width: 600px;
 }
-
 #indexHero h1 {
   font-size: 3rem;
   color: #2980b9;
   margin-bottom: 15px;
 }
-
 #indexHero p {
   font-size: 1.25rem;
   color: #555;
   margin-bottom: 30px;
 }
 
-#indexHero button {
-  background-color: #3498db;
-  color: white;
-  font-size: 18px;
-  padding: 14px 36px;
+/* Formulaires */
+.form-container, .export-container, .import-container {
+  margin-top: 30px;
+  width: 90%;
+  max-width: 600px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  text-align: center;
+}
+.export-container, .import-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+input, textarea, select {
+  padding: 10px;
+  margin: 10px 0;
   border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.3);
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  border: 1px solid #ccc;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 16px;
+  resize: vertical;
+}
+textarea {
+  min-height: 80px;
+}
+#importPreview, #messageImport {
+  max-width: 600px;
+  margin: 15px auto;
+  text-align: left;
+  font-size: 14px;
+  color: #555;
+}
+#importPreview div {
+  margin-bottom: 10px;
 }
 
-#indexHero button:hover {
-  background-color: #2980b9;
-  transform: scale(1.05);
-}
-
-table th,
-table td {
+/* Table */
+table th, table td {
   text-align: center;
   vertical-align: middle;
   padding: 10px;
 }
-/* Style pour le bouton Supprimer */
+
+/* Validation */
+.validation-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.validation-container input[type="text"] {
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  width: 250px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.validation-container button {
+  @extend .btn;
+  background-color: #27ae60;
+}
+.validation-container button:hover {
+  background-color: #219150;
+}
+
+/* Retour gestion */
+#btnRetourGestion {
+  @extend .btn;
+  background-color: #3498db;
+  padding: 12px 28px;
+  font-size: 16px;
+  max-width: 300px;
+  margin: 30px auto 50px auto;
+  display: block;
+}
+#btnRetourGestion:hover {
+  background-color: #2980b9;
+}
+
+/* Supprimer */
 .btn-supprimer {
   background-color: #e74c3c;
   color: white;
@@ -350,114 +295,58 @@ table td {
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
 .btn-supprimer:hover {
   background-color: #c0392b;
   transform: scale(1.05);
 }
 
-.validation-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-
-.validation-container input[type="text"] {
-  padding: 10px 16px;
-  font-size: 16px;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  width: 250px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-  font-family: 'Quicksand', sans-serif;
-}
-
-.validation-container button {
-  padding: 10px 20px;
-  border-radius: 12px;
-  font-size: 16px;
-  background-color: #27ae60;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.validation-container button:hover {
-  background-color: #219150;
-  transform: scale(1.05);
-}
-/* --- Améliorations design accueil --- */
-body {
-  opacity: 0;
-  animation: fadeInBody 0.6s ease-out forwards;
-}
-
+/* Animations */
 @keyframes fadeInBody {
   to { opacity: 1; }
 }
-
-button i {
-  margin-right: 10px;
-  font-size: 1.1em;
-  vertical-align: middle;
-}
-
-.boutons {
-  flex-direction: column;
-  gap: 20px;
-  margin-top: 40px;
+@keyframes pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
 }
 
 /* Responsive */
 @media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .boutons {
+    flex-direction: row;
+    margin-bottom: 20px;
+    gap: 15px;
+  }
+  .roue-container {
+    width: 350px;
+    height: 350px;
+  }
+  canvas {
+    width: 100% !important;
+    height: auto !important;
+  }
+  #resultat {
+    width: 90%;
+    margin-top: 20px;
+  }
   #indexHero {
     margin-top: 40px;
     padding: 30px 15px;
   }
-
   #indexHero h1 {
     font-size: 2.2rem;
   }
-
   #indexHero p {
     font-size: 1.1rem;
   }
-
   .boutons button {
     width: 90%;
     max-width: 300px;
   }
-}
-/* Boutons page d'accueil harmonisés */
-.btn-hero {
-  background-color: #3498db;
-  color: white;
-  font-size: 18px;
-  padding: 14px 36px;
-  border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.3);
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.btn-hero:hover {
-  background-color: #2980b9;
-  transform: scale(1.05);
-}
-
-
-/* Responsive */
-@media (max-width: 768px) {
   .card {
     width: 90%;
   }
