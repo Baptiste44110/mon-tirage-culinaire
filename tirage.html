@@ -4,6 +4,43 @@
   <meta charset="UTF-8" />
   <title>Tirage au sort culinaire</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .validation-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .validation-container input[type="text"] {
+      padding: 10px 16px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      width: 250px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    .validation-container button {
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 16px;
+      background-color: #2980b9;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .validation-container button:hover {
+      background-color: #1f6391;
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
   <h1>🎯 Tirer au sort un plat à cuisiner !</h1>
@@ -21,9 +58,12 @@
 
     <div id="resultat"></div>
 
-    <div id="validationSection" style="display: none; margin-top: 20px;">
-      <input type="text" id="prenomInput" placeholder="Entrez votre prénom" />
-      <button id="validerChoix" class="btn-bleu">Valider le plat de la semaine</button>
+    <div id="validationSection" style="display: none;">
+      <p style="text-align: center; margin-top: 20px;">Qui valide ce plat ?</p>
+      <div class="validation-container">
+        <input type="text" id="prenomInput" placeholder="Entrez votre prénom" />
+        <button id="validerChoix">Valider</button>
+      </div>
     </div>
   </div>
 
@@ -62,15 +102,12 @@
     let currentUser = null;
     let platChoisi = null;
 
-    // Gestion du clic sur "Modifier la liste des plats"
     boutonModifier.addEventListener("click", () => {
       window.location.href = 'gestion.html';
     });
 
-    // Gestion du clic sur "Tirer un plat"
     boutonTirer.addEventListener("click", tournerRoue);
 
-    // Numéro de semaine
     Date.prototype.getWeekNumber = function () {
       const d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
       const dayNum = d.getUTCDay() || 7;
