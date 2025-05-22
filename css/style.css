@@ -333,6 +333,14 @@ h3 {
   transform: scale(1.05);
 }
 
+table th,
+table td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 10px;
+}
+
+
 /* Responsive */
 @media (max-width: 768px) {
   .card {
