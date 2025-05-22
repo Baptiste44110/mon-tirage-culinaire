@@ -339,7 +339,22 @@ table td {
   vertical-align: middle;
   padding: 10px;
 }
+/* Style pour le bouton Supprimer */
+.btn-supprimer {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
 
+.btn-supprimer:hover {
+  background-color: #c0392b;
+  transform: scale(1.05);
+}
 
 /* Responsive */
 @media (max-width: 768px) {
