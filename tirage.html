@@ -4,14 +4,12 @@
   <meta charset="UTF-8" />
   <title>Tirage au sort culinaire</title>
   <link rel="stylesheet" href="css/style.css" />
-  
 </head>
 <body class="page-tirage">
 
   <h1>🎯 Tirer au sort un plat à cuisiner !</h1>
 
   <div class="container">
-
     <div class="boutons">
       <button class="btn btn-vert" id="boutonTirer">🎲 Tirer un plat</button>
       <button class="btn btn-vert" id="btnModifierListe">📝 Modifier la liste</button>
@@ -25,6 +23,7 @@
     </div>
 
     <div class="resultat-container">
+      <!-- S'assurer que "invisible" est présent -->
       <div id="resultat" class="invisible"></div>
 
       <div id="validationSection" style="display: none; margin-top: 20px;">
@@ -35,9 +34,8 @@
         </div>
       </div>
     </div>
-
   </div>
-    
+
   <footer id="footerUser" style="margin-top:20px; font-style: italic; color: #666;">
     Connecté en tant que : <span id="userEmail">Non connecté</span>
   </footer>
@@ -62,11 +60,16 @@
     const canvas = document.getElementById('roueCanvas');
     const ctx = canvas.getContext('2d');
     const rayon = canvas.width / 2;
+    const resultat = document.getElementById('resultat');
     const userEmailSpan = document.getElementById('userEmail');
     const validationSection = document.getElementById('validationSection');
     const boutonValider = document.getElementById('validerChoix');
     const boutonTirer = document.getElementById('boutonTirer');
     const boutonModifier = document.getElementById('btnModifierListe');
+
+    // 🔒 Force l'invisibilité au départ
+    resultat.classList.add("invisible");
+    validationSection.style.display = "none";
 
     let angleInitial = 0;
     let plats = [];
@@ -118,7 +121,8 @@
         return;
       }
 
-      document.getElementById("resultat").innerHTML = "";
+      resultat.classList.add("invisible");
+      resultat.innerHTML = "";
       validationSection.style.display = "none";
 
       let tours = 5 + Math.random() * 3;
@@ -146,23 +150,17 @@
     }
 
     function afficherResultat(plat) {
-      const resultat = document.getElementById("resultat");
-     resultat.classList.remove("invisible"); // <-- ligne ajoutée
-      
-      const son = document.getElementById("sonTirage");
-      son.currentTime = 0;
-      son.play();
-
       resultat.innerHTML = `
         <h2>🍽️ ${plat.nom}</h2>
         <p><strong>Pays :</strong> ${plat.pays}</p>
         <p><strong>Continent :</strong> ${plat.continent}</p>
         <p><em>${plat.description}</em></p>
       `;
+      resultat.classList.remove("invisible");
 
-      resultat.classList.remove("animated");
-      void resultat.offsetWidth;
-      resultat.classList.add("animated");
+      const son = document.getElementById("sonTirage");
+      son.currentTime = 0;
+      son.play();
     }
 
     boutonValider.onclick = async () => {
