@@ -240,15 +240,12 @@ canvas {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.card p {
-  width: 100%;          /* occupe toute la largeur de la card */
-  margin: 4px 0;
+  /* Optional: for equal height cards */
+  min-height: 350px; /* ou une hauteur fixe adaptée */
 }
 
 .card button {
-  margin-top: 12px;
+  margin-top: auto; /* pousse le bouton en bas */
   padding: 8px 16px;
   border: none;
   border-radius: 12px;
@@ -257,10 +254,16 @@ canvas {
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   transition: background-color 0.3s ease, transform 0.2s ease;
-  width: fit-content;   /* largeur selon le texte */
-  align-self: center;   /* centre horizontalement dans le flex */
-  min-width: 120px;     /* largeur mini pour un beau bouton */
+  width: fit-content;
+  align-self: center;
+  min-width: 120px;
   text-align: center;
+}
+
+
+.card p {
+  width: 100%;          /* occupe toute la largeur de la card */
+  margin: 4px 0;
 }
 
 .card button:hover {
