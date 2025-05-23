@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Tirage au sort culinaire</title>
   <link rel="stylesheet" href="css/style.css" />
+  
 </head>
 <body class="page-tirage">
 
@@ -23,7 +24,6 @@
     </div>
 
     <div class="resultat-container">
-      <!-- S'assurer que "invisible" est présent -->
       <div id="resultat" class="invisible"></div>
 
       <div id="validationSection" style="display: none; margin-top: 20px;">
@@ -43,6 +43,9 @@
   <audio id="sonTirage">
     <source src="notification.wav" type="audio/wav" />
   </audio>
+
+  <!-- Notification container -->
+  <div id="notification" class="notification"></div>
 
   <script type="module">
     import {
@@ -163,6 +166,17 @@
       son.play();
     }
 
+    // Fonction notification custom
+    function showNotification(message, duration = 3000) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.classList.add('visible');
+      
+      setTimeout(() => {
+        notification.classList.remove('visible');
+      }, duration);
+    }
+
     boutonValider.onclick = async () => {
       const prenom = document.getElementById("prenomInput").value.trim();
       if (!prenom) {
@@ -194,7 +208,7 @@
         localStorage.setItem("historiqueTirages", JSON.stringify(historique));
       }
 
-      alert("Plat validé pour la semaine !");
+      showNotification("Plat validé pour la semaine !");
       validationSection.style.display = "none";
       document.getElementById("prenomInput").value = "";
     };
