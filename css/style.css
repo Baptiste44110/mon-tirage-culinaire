@@ -335,14 +335,20 @@ table th, table td {
 }
 
 .page-tirage .resultat-container {
-  display: flex;
+   display: flex;
   flex-direction: column;
-  align-items: center;
-  flex-shrink: 0;
-  width: 300px;
+  align-items: center;  /* centre horizontalement */
+  justify-content: center; /* centre verticalement */
+  height: 500px; /* ou hauteur égale à celle de la roue, pour garder alignement vertical stable */
+  width: 300px;  /* ta largeur actuelle */
+  box-sizing: border-box;
 }
 
 .page-tirage #resultat {
+ flex-grow: 1; /* occupe tout l’espace vertical disponible sauf validation */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* centre verticalement texte dans résultat */
   width: 100%;
   min-height: 150px;
 }
