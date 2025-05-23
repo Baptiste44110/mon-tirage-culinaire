@@ -100,7 +100,7 @@
       const description = document.getElementById("description").value.trim();
 
       if (!nom || !pays || !continent || !description) {
-        alert("Merci de remplir tous les champs.");
+         showNotification("Merci de remplir tous les champs",3000,'error');
         return;
       }
 
@@ -110,21 +110,21 @@
       );
 
       if (existe) {
-        alert("Ce plat existe déjà dans la liste !");
+         showNotification("Ce plat existe déjà dans la liste !",3000,'error');
         return;
       }
 
       const nouvelleSpecialite = { nom, pays, continent, description };
       platsPerso.push(nouvelleSpecialite);
       await sauvegarderPlats(currentUser);
-      alert("Plat ajouté avec succès !");
+      showNotification("Plat ajouté avec succès !",3000,'info');
       formAjout.reset();
     }
 
     // Exporter plats
     function exporterPlats() {
       if (platsPerso.length === 0) {
-        alert("Aucun plat à exporter !");
+        showNotification("Aucun plat à exporter !",3000,'error');
         return;
       }
       const dataStr = JSON.stringify(platsPerso, null, 2);
@@ -153,14 +153,14 @@
           );
 
           if (!estValide) {
-            alert("Fichier JSON invalide ou incomplet.");
+             showNotification("Fichier JSON invalide ou incomplet.",3000,'error');
             return;
           }
 
           platsImportTemporaire = data;
           afficherPreviewImport(data);
         } catch (err) {
-          alert("Erreur lors de la lecture du fichier JSON.");
+           showNotification("Erreur lors de la lecture du fichier JSON.",3000,'error');
         }
       };
       reader.readAsText(file);
@@ -233,7 +233,7 @@
     onAuthStateChangedListener(async (user) => {
       if (mode === 'connecte') {
         if (!user) {
-          alert("Connexion requise.");
+          showNotification("Connexion requise.",3000,'error');
           window.location.href = 'index.html';
           return;
         }
