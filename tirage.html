@@ -172,24 +172,25 @@
     // Fonction notification custom
     let notificationTimeout;
 
-    function showNotification(message, duration = 3000) {
-      const notification = document.getElementById('notification');
-      notification.textContent = message;
-      notification.classList.remove('fade-out'); // enlève fade-out si présent
-      notification.classList.add('visible');
+    function showNotification(message, duration = 3000, type = 'info') {
+  const notification = document.getElementById('notification');
+  notification.textContent = message;
 
-      if (notificationTimeout) clearTimeout(notificationTimeout);
+  // Nettoyer les classes de type avant d'ajouter la bonne
+  notification.classList.remove('fade-out', 'visible', 'error', 'info');
 
-      notificationTimeout = setTimeout(() => {
-        // Ajoute classe fade-out pour animation disparition
-        notification.classList.add('fade-out');
-        // Puis au bout de la transition, enlève visible
-        setTimeout(() => {
-          notification.classList.remove('visible');
-          notification.classList.remove('fade-out');
-        }, 400); // correspond à la durée de transition fade-out
-      }, duration);
-    }
+  // Ajouter la classe correspondant au type (par défaut 'info')
+  notification.classList.add('visible', type);
+
+  if (notificationTimeout) clearTimeout(notificationTimeout);
+
+  notificationTimeout = setTimeout(() => {
+    notification.classList.add('fade-out');
+    setTimeout(() => {
+      notification.classList.remove('visible', 'fade-out', 'error', 'info');
+    }, 400);
+  }, duration);
+}
 
     boutonValider.onclick = async () => {
       const prenom = document.getElementById("prenomInput").value.trim();
@@ -222,7 +223,7 @@
         localStorage.setItem("historiqueTirages", JSON.stringify(historique));
       }
 
-      showNotification("Plat validé pour la semaine !");
+      showNotification("Plat validé pour la semaine !",3000,'info');
       validationSection.style.display = "none";
       document.getElementById("prenomInput").value = "";
     };
