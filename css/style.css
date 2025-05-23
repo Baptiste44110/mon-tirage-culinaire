@@ -119,6 +119,11 @@ canvas {
   margin: 0 auto;
 }
 
+#roueCanvas {
+  width: 500px;
+  height: 500px;
+}
+
 #fleche {
   position: absolute;
   top: -15px;
