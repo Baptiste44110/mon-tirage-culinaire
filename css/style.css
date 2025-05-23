@@ -112,13 +112,18 @@ canvas {
   margin: 0 auto;
 }
 
+.roue-container {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  margin: 0 auto;
+}
+
 #fleche {
- position: absolute;
-  top: -20px; /* Ajuste si besoin */
+  position: absolute;
+  top: -20px;
   left: 50%;
-  transform: translateX(-50%) rotate(0deg);
-  width: 0;
-  height: 0;
+  transform: translateX(-50%);
   border-left: 20px solid transparent;
   border-right: 20px solid transparent;
   border-top: 30px solid black;
