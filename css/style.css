@@ -330,16 +330,19 @@ table th, table td {
 }
 
 .page-tirage .roue-wrapper {
-  flex-shrink: 0;
+  display: flex;
+  justify-content: center; /* centre horizontalement */
+  align-items: center;
+  flex-grow: 1;
   position: relative;
 }
+
 
 .page-tirage .resultat-container {
    display: flex;
   flex-direction: column;
   align-items: center;  /* centre horizontalement */
   justify-content: center; /* centre verticalement */
-  height: 500px; /* ou hauteur égale à celle de la roue, pour garder alignement vertical stable */
   width: 300px;  /* ta largeur actuelle */
   box-sizing: border-box;
 }
