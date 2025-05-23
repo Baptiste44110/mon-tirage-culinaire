@@ -64,8 +64,6 @@
       sauvegarderPlatsFirebase 
     } from './firebase.js';
 
-    import { showNotification } from './fonctions.js';
-
     const mode = sessionStorage.getItem('mode'); // 'invite' ou 'connecte'
     if (!mode) {
       window.location.href = 'index.html';
@@ -102,7 +100,7 @@
       const description = document.getElementById("description").value.trim();
 
       if (!nom || !pays || !continent || !description) {
-        showNotification("Merci de remplir tous les champs.", 3000, "error");
+        alert("Merci de remplir tous les champs.");
         return;
       }
 
@@ -112,21 +110,21 @@
       );
 
       if (existe) {
-        showNotification("Ce plat existe déjà dans la liste !", 3000, "error");
+        alert("Ce plat existe déjà dans la liste !");
         return;
       }
 
       const nouvelleSpecialite = { nom, pays, continent, description };
       platsPerso.push(nouvelleSpecialite);
       await sauvegarderPlats(currentUser);
-      showNotification("Plat ajouté avec succès !", 3000, "info");
+      alert("Plat ajouté avec succès !");
       formAjout.reset();
     }
 
     // Exporter plats
     function exporterPlats() {
       if (platsPerso.length === 0) {
-        showNotification("Aucun plat à exporter !", 3000, "error");
+        alert("Aucun plat à exporter !");
         return;
       }
       const dataStr = JSON.stringify(platsPerso, null, 2);
@@ -155,14 +153,14 @@
           );
 
           if (!estValide) {
-            showNotification("Fichier JSON invalide ou incomplet.", 3000, "error");
+            alert("Fichier JSON invalide ou incomplet.");
             return;
           }
 
           platsImportTemporaire = data;
           afficherPreviewImport(data);
         } catch (err) {
-          showNotification("Erreur lors de la lecture du fichier JSON.", 3000, "error");
+          alert("Erreur lors de la lecture du fichier JSON.");
         }
       };
       reader.readAsText(file);
@@ -174,7 +172,7 @@
       container.innerHTML = "<h4>📦 Plats à importer :</h4>";
       data.forEach(p => {
         const div = document.createElement("div");
-        div.innerHTML = `<strong>${p.nom}</strong> (${p.pays}) - ${p.continent}<br><em>${p.description}</em><hr>`;
+        div.innerHTML = <strong>${p.nom}</strong> (${p.pays}) - ${p.continent}<br><em>${p.description}</em><hr>;
         container.appendChild(div);
       });
     }
@@ -200,7 +198,7 @@
       document.getElementById("previewImport").innerHTML = "";
       document.getElementById("messageImport").textContent =
         platsAjoutes > 0
-          ? `✅ ${platsAjoutes} plats importés avec succès !`
+          ? ✅ ${platsAjoutes} plats importés avec succès !
           : "⚠️ Tous les plats étaient déjà présents.";
 
       setTimeout(() => {
@@ -213,7 +211,7 @@
     onAuthStateChangedListener(async (user) => {
       if (mode === 'connecte') {
         if (!user) {
-          showNotification("Connexion requise.", 3000, "error");
+          alert("Connexion requise.");
           window.location.href = 'index.html';
           return;
         }
