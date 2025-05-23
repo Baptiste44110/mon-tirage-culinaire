@@ -122,7 +122,7 @@
 
     function tournerRoue() {
       if (plats.length === 0) {
-        alert("Aucun plat enregistré !");
+        showNotification("Aucun plat enregistré !",3000,'error');
         return;
       }
 
@@ -195,7 +195,7 @@
     boutonValider.onclick = async () => {
       const prenom = document.getElementById("prenomInput").value.trim();
       if (!prenom) {
-        alert("Veuillez entrer votre prénom");
+        showNotification("Veuillez entrer votre prénom",3000,'error');
         return;
       }
 
