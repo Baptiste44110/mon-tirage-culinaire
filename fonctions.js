@@ -2,20 +2,23 @@
 
 let notificationTimeout;
 
-export function showNotification(message, duration = 3000) {
+function showNotification(message, duration = 3000, type = 'info') {
   const notification = document.getElementById('notification');
-  if (!notification) return;
-
   notification.textContent = message;
-  notification.classList.remove('fade-out');
-  notification.classList.add('visible');
+
+  // Nettoyer les classes de type avant d'ajouter la bonne
+  notification.classList.remove('fade-out', 'visible', 'error', 'info');
+
+  // Ajouter la classe correspondant au type (par défaut 'info')
+  notification.classList.add('visible', type);
 
   if (notificationTimeout) clearTimeout(notificationTimeout);
 
   notificationTimeout = setTimeout(() => {
     notification.classList.add('fade-out');
     setTimeout(() => {
-      notification.classList.remove('visible', 'fade-out');
+      notification.classList.remove('visible', 'fade-out', 'error', 'info');
     }, 400);
   }, duration);
 }
+
