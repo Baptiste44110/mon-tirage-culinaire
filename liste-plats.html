@@ -137,7 +137,7 @@
 
       if (mode === "connecte") {
         if (!user) {
-          alert("Veuillez vous reconnecter.");
+           showNotification("Veuillez vous reconnecter.",3000,'error');
           window.location.href = "index.html";
           return;
         }
