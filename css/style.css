@@ -43,8 +43,8 @@ h3 {
   z-index: 10000;
   opacity: 0;
   pointer-events: none;
+  transform: translateY(-10px);
   transition: opacity 0.3s ease, transform 0.3s ease;
-  transform: translateY(-10px); /* animation douce d'entrée */
 }
 
 #notification.visible {
@@ -53,20 +53,15 @@ h3 {
   transform: translateY(0);
 }
 
-.notification.fade-out {
-  opacity: 0;
-  transform: translateY(-10px);
-  pointer-events: none;
-}
 
 
-/* Animation de disparition plus fluide */
 .notification.fade-out {
   opacity: 0;
-  transform: translate(-50%, -50%) scale(0.8);
+  transform: translateY(-10px); /* Corrigé ici */
   pointer-events: none;
   transition: opacity 0.4s ease, transform 0.4s ease;
 }
+
 
 /* ------ CONTAINERS ------ */
 .container {
