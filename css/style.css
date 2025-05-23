@@ -233,8 +233,7 @@ canvas {
 .card {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* AU LIEU DE space-between */
-  align-items: center;
+  align-items: center;  /* centre horizontalement tous les éléments */
   width: 250px;
   padding: 16px;
   border: 1px solid #ccc;
@@ -242,33 +241,38 @@ canvas {
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   background-color: #fff;
   min-height: 300px;
+  text-align: center;   /* centre le texte des paragraphes */
 }
 
-
-.card h3 {
-  margin: 0 0 8px 0;
-}
 .card p {
+  width: 100%;          /* occupe toute la largeur de la card */
   margin: 4px 0;
-  color: #555;
 }
+
 .card button {
-  background-color: #e74c3c;
-  font-size: 14px;
+  margin-top: 12px;
   padding: 8px 16px;
   border: none;
   border-radius: 12px;
+  background-color: #e74c3c;
   color: white;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   transition: background-color 0.3s ease, transform 0.2s ease;
-  align-self: center;   /* <-- centré horizontalement */
-  margin-top: 12px;     /* <-- petit écart sous le contenu */
+  width: fit-content;   /* largeur selon le texte */
+  align-self: center;   /* centre horizontalement dans le flex */
+  min-width: 120px;     /* largeur mini pour un beau bouton */
+  text-align: center;
 }
 
 .card button:hover {
   background-color: #c0392b;
 }
+
+.card h3 {
+  margin: 0 0 8px 0;
+}
+
 
 /* Page index */
 #indexHero {
