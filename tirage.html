@@ -54,7 +54,8 @@
       sauvegarderHistoriqueFirebase
     } from './firebase.js';
 
-    import { showNotification } from './js/fonctions.js';
+    // Import de la fonction showNotification depuis fonctions.js
+    import { showNotification } from './fonctions.js';
 
     const mode = sessionStorage.getItem('mode');
     if (!mode) {
@@ -71,6 +72,7 @@
     const boutonTirer = document.getElementById('boutonTirer');
     const boutonModifier = document.getElementById('btnModifierListe');
 
+    // 🔒 Force l'invisibilité au départ
     resultat.classList.add("invisible");
     validationSection.style.display = "none";
 
@@ -103,11 +105,13 @@
       return couleurs[i % couleurs.length];
     }
 
-    function dessinerRoue() {
-      const anglePart = (2 * Math.PI) / Math.max(plats.length, 8);
+    // Maintenant, dessiner la roue selon un angle donné
+    function dessinerRoue(angle) {
+      const nbSections = Math.max(plats.length, 8);
+      const anglePart = (2 * Math.PI) / nbSections;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < Math.max(plats.length, 8); i++) {
-        const start = angleInitial + i * anglePart;
+      for (let i = 0; i < nbSections; i++) {
+        const start = angle + i * anglePart;
         const end = start + anglePart;
         ctx.beginPath();
         ctx.moveTo(rayon, rayon);
@@ -120,7 +124,7 @@
 
     function tournerRoue() {
       if (plats.length === 0) {
-        showNotification("Aucun plat enregistré !");
+        alert("Aucun plat enregistré !");
         return;
       }
 
@@ -138,12 +142,13 @@
         count++;
         const progress = count / steps;
         const easeOut = 1 - Math.pow(1 - progress, 3);
-        angleInitial = angleFinal * easeOut;
+        const angleCourant = angleInitial + (angleFinal - angleInitial) * easeOut;
 
-        dessinerRoue();
+        dessinerRoue(angleCourant);
 
         if (count >= steps) {
           clearInterval(interval);
+          angleInitial = angleCourant; // mise à jour finale de l'angle
           const index = Math.floor(Math.random() * plats.length);
           platChoisi = plats[index];
           afficherResultat(platChoisi);
@@ -169,7 +174,7 @@
     boutonValider.onclick = async () => {
       const prenom = document.getElementById("prenomInput").value.trim();
       if (!prenom) {
-        showNotification("Veuillez entrer votre prénom");
+        alert("Veuillez entrer votre prénom");
         return;
       }
 
@@ -208,7 +213,7 @@
           if (user) {
             currentUser = user;
             plats = await chargerPlatsFirebase(user);
-            dessinerRoue();
+            dessinerRoue(angleInitial);
             userEmailSpan.textContent = user.email || user.displayName || "Utilisateur connecté";
           } else {
             userEmailSpan.textContent = "Non connecté";
@@ -217,12 +222,13 @@
         });
       } else if (mode === 'invite') {
         plats = JSON.parse(localStorage.getItem('platsPerso')) || [];
-        dessinerRoue();
+        dessinerRoue(angleInitial);
         userEmailSpan.textContent = "Mode invité";
       }
     }
 
     chargerPlats();
+
   </script>
 </body>
 </html>
