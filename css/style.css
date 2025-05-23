@@ -233,7 +233,7 @@ canvas {
 .card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start; /* AU LIEU DE space-between */
   align-items: center;
   width: 250px;
   padding: 16px;
@@ -243,6 +243,7 @@ canvas {
   background-color: #fff;
   min-height: 300px;
 }
+
 
 .card h3 {
   margin: 0 0 8px 0;
