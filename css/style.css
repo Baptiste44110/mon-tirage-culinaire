@@ -317,10 +317,11 @@ table th, table td {
 #btnSupprimerTous {
   margin-top: 30px;
 }
+/*Page tirage */
 .page-tirage .container {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   gap: 40px;
   flex-wrap: nowrap;
 }
@@ -332,6 +333,7 @@ table th, table td {
   margin-top: 40px;
   flex-shrink: 0;
   width: 150px; /* Ajuste selon besoin */
+  white-space: nowrap;
 }
 
 .page-tirage .roue-wrapper {
