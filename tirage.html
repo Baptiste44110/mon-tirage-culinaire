@@ -7,16 +7,18 @@
   
 </head>
 <body class="page-tirage">
+
   <h1>🎯 Tirer au sort un plat à cuisiner !</h1>
 
   <div class="container">
+
     <div class="boutons">
       <button class="btn btn-vert" id="boutonTirer">🎲 Tirer un plat</button>
       <button class="btn btn-vert" id="btnModifierListe">📝 Modifier la liste</button>
     </div>
 
     <div class="roue-wrapper">
-      <div class="roue-cadre">
+      <div class="roue-cadre" style="position: relative; width: 500px; height: 500px;">
         <div id="fleche"></div>
         <canvas id="roueCanvas" width="500" height="500"></canvas>
       </div>
@@ -33,6 +35,7 @@
         </div>
       </div>
     </div>
+
   </div>
     
   <footer id="footerUser" style="margin-top:20px; font-style: italic; color: #666;">
