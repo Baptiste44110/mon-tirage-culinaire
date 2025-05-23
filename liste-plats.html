@@ -14,10 +14,7 @@
     </div>
   </div>
 
-  <!-- Nouveau bouton pour tout supprimer -->
   <button id="btnSupprimerTous" class="btn btn-bleu">Supprimer tous les plats</button>
-
-  <!-- Bouton existant pour revenir -->
   <button id="btnRetourGestion" class="btn btn-bleu" onclick="window.location.href='gestion.html'">← Retour à la gestion des plats</button>
   <button id="btnDeconnexion" class="btn btn-bleu" style="display: none;">Déconnexion</button>
 
@@ -26,7 +23,18 @@
   </footer>
 
   <!-- Notification -->
-<div id="notification" class="notification"></div>
+  <div id="notification" class="notification"></div>
+
+  <!-- Modale de confirmation -->
+  <div id="confirmModal" class="modal hidden">
+    <div class="modal-content">
+      <p>❗ Voulez-vous vraiment supprimer cette entrée ?</p>
+      <div class="modal-buttons">
+        <button id="confirmYes" class="btn btn-rouge">Oui</button>
+        <button id="confirmNo" class="btn btn-bleu">Annuler</button>
+      </div>
+    </div>
+  </div>
 
   <script type="module">
     import {
@@ -46,6 +54,36 @@
     let plats = [];
     let currentUser = null;
 
+    // Éléments modale confirmation
+    const modal = document.getElementById('confirmModal');
+    const btnYes = document.getElementById('confirmYes');
+    const btnNo = document.getElementById('confirmNo');
+
+    // Fonction pour afficher la modale et gérer réponse
+    function demanderConfirmation(message, callback) {
+      modal.querySelector('p').textContent = message;
+      modal.classList.remove('hidden');
+
+      const cleanup = () => {
+        modal.classList.add('hidden');
+        btnYes.removeEventListener('click', onYes);
+        btnNo.removeEventListener('click', onNo);
+      };
+
+      const onYes = () => {
+        cleanup();
+        callback(true);
+      };
+
+      const onNo = () => {
+        cleanup();
+        callback(false);
+      };
+
+      btnYes.addEventListener('click', onYes);
+      btnNo.addEventListener('click', onNo);
+    }
+
     function afficherListe() {
       liste.innerHTML = "";
       if (plats.length === 0) {
@@ -64,14 +102,16 @@
           <p><em>${plat.description}</em></p>
           <button class="btn-supprimer" data-index="${index}">Supprimer ce plat</button>
         `;
-        div.querySelector("button").onclick = () => supprimerPlat(index);
+        div.querySelector("button").onclick = () => {
+          demanderConfirmation("Voulez-vous vraiment supprimer ce plat ?", (confirmed) => {
+            if (confirmed) supprimerPlat(index);
+          });
+        };
         liste.appendChild(div);
       });
     }
 
     async function supprimerPlat(index) {
-      if (!confirm("Voulez-vous vraiment supprimer ce plat ?")) return;
-
       plats.splice(index, 1);
 
       if (mode === "connecte" && currentUser) {
@@ -81,53 +121,45 @@
       }
 
       afficherListe();
+      showNotification("Plat supprimé avec succès !", 3000, 'info');
     }
 
-    btnSupprimerTous.onclick = async () => {
-      if (!confirm("Voulez-vous vraiment supprimer TOUS les plats ?")) return;
+    btnSupprimerTous.onclick = () => {
+      demanderConfirmation("Voulez-vous vraiment supprimer TOUS les plats ?", async (confirmed) => {
+        if (!confirmed) return;
 
-      plats = [];
+        plats = [];
 
-      if (mode === "connecte" && currentUser) {
-        await sauvegarderPlatsFirebase(plats, currentUser);
-      } else {
-        localStorage.setItem("platsPerso", JSON.stringify(plats));
-      }
+        if (mode === "connecte" && currentUser) {
+          await sauvegarderPlatsFirebase(plats, currentUser);
+        } else {
+          localStorage.setItem("platsPerso", JSON.stringify(plats));
+        }
 
-      afficherListe();
+        afficherListe();
+        showNotification("Tous les plats ont été supprimés !", 3000, 'info');
+      });
     };
 
-    async function chargerPlats() {
-      if (mode === "connecte" && currentUser) {
-        plats = await chargerPlatsFirebase(currentUser);
-      } else {
-        plats = JSON.parse(localStorage.getItem("platsPerso")) || [];
-      }
-      afficherListe();
-    }
-
-     // Fonction notification custom
+    // Fonction notification custom
     let notificationTimeout;
 
     function showNotification(message, duration = 3000, type = 'info') {
-  const notification = document.getElementById('notification');
-  notification.textContent = message;
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
 
-  // Nettoyer les classes de type avant d'ajouter la bonne
-  notification.classList.remove('fade-out', 'visible', 'error', 'info');
+      notification.classList.remove('fade-out', 'visible', 'error', 'info');
+      notification.classList.add('visible', type);
 
-  // Ajouter la classe correspondant au type (par défaut 'info')
-  notification.classList.add('visible', type);
+      if (notificationTimeout) clearTimeout(notificationTimeout);
 
-  if (notificationTimeout) clearTimeout(notificationTimeout);
-
-  notificationTimeout = setTimeout(() => {
-    notification.classList.add('fade-out');
-    setTimeout(() => {
-      notification.classList.remove('visible', 'fade-out', 'error', 'info');
-    }, 400);
-  }, duration);
-}
+      notificationTimeout = setTimeout(() => {
+        notification.classList.add('fade-out');
+        setTimeout(() => {
+          notification.classList.remove('visible', 'fade-out', 'error', 'info');
+        }, 400);
+      }, duration);
+    }
 
     btnDeconnexion.onclick = async () => {
       await signOut(auth);
@@ -140,7 +172,7 @@
 
       if (mode === "connecte") {
         if (!user) {
-           showNotification("Veuillez vous reconnecter.",3000,'error');
+          showNotification("Veuillez vous reconnecter.", 3000, 'error');
           window.location.href = "index.html";
           return;
         }
@@ -153,9 +185,17 @@
         btnDeconnexion.textContent = "Retour à l'accueil";
       }
 
-
       chargerPlats();
     });
+
+    async function chargerPlats() {
+      if (mode === "connecte" && currentUser) {
+        plats = await chargerPlatsFirebase(currentUser);
+      } else {
+        plats = JSON.parse(localStorage.getItem("platsPerso")) || [];
+      }
+      afficherListe();
+    }
   </script>
 </body>
 </html>
