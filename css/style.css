@@ -241,7 +241,7 @@ canvas {
   flex-direction: column;
   gap: 8px;
   /* Optional: for equal height cards */
-  min-height: 350px; /* ou une hauteur fixe adaptée */
+  min-height: 250px; /* ou une hauteur fixe adaptée */
 }
 
 .card button {
