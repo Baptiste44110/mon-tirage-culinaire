@@ -31,9 +31,8 @@ h3 {
     /* Conteneur popup notification centrée */
 .notification {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.8);
+  top: 20px;
+  right: 20px;
   background-color: #4caf50;
   color: white;
   padding: 20px 40px;
@@ -45,11 +44,21 @@ h3 {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(-10px); /* animation douce d'entrée */
 }
+
 #notification.visible {
   opacity: 1;
   pointer-events: auto;
+  transform: translateY(0);
 }
+
+.notification.fade-out {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
 
 /* Animation de disparition plus fluide */
 .notification.fade-out {
