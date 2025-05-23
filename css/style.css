@@ -27,6 +27,25 @@ h3 {
   color: #e74c3c;
   margin-bottom: 15px;
 }
+/* Notification styles */
+    .notification {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #27ae60;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+      font-weight: 600;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 1000;
+    }
 
 /* ------ CONTAINERS ------ */
 .container {
