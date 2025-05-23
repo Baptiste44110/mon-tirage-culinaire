@@ -256,15 +256,16 @@ canvas {
   background-color: #e74c3c;
   font-size: 14px;
   padding: 8px 16px;
-  align-self: flex-start;
-  margin-top: auto;
   border: none;
   border-radius: 12px;
   color: white;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   transition: background-color 0.3s ease, transform 0.2s ease;
+  align-self: center;   /* <-- centré horizontalement */
+  margin-top: 12px;     /* <-- petit écart sous le contenu */
 }
+
 .card button:hover {
   background-color: #c0392b;
 }
