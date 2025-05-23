@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Tirage au sort culinaire</title>
   <link rel="stylesheet" href="css/style.css" />
-  
 </head>
 <body class="page-tirage">
 
@@ -55,6 +54,8 @@
       sauvegarderHistoriqueFirebase
     } from './firebase.js';
 
+    import { showNotification } from './js/fonctions.js';
+
     const mode = sessionStorage.getItem('mode');
     if (!mode) {
       window.location.href = 'index.html';
@@ -70,7 +71,6 @@
     const boutonTirer = document.getElementById('boutonTirer');
     const boutonModifier = document.getElementById('btnModifierListe');
 
-    // 🔒 Force l'invisibilité au départ
     resultat.classList.add("invisible");
     validationSection.style.display = "none";
 
@@ -120,7 +120,7 @@
 
     function tournerRoue() {
       if (plats.length === 0) {
-        alert("Aucun plat enregistré !");
+        showNotification("Aucun plat enregistré !");
         return;
       }
 
@@ -166,33 +166,10 @@
       son.play();
     }
 
-    // Fonction notification custom
-   let notificationTimeout;
-
-function showNotification(message, duration = 3000) {
-  const notification = document.getElementById('notification');
-  notification.textContent = message;
-  notification.classList.remove('fade-out'); // enlève fade-out si présent
-  notification.classList.add('visible');
-
-  if (notificationTimeout) clearTimeout(notificationTimeout);
-
-  notificationTimeout = setTimeout(() => {
-    // Ajoute classe fade-out pour animation disparition
-    notification.classList.add('fade-out');
-    // Puis au bout de la transition, enlève visible
-    setTimeout(() => {
-      notification.classList.remove('visible');
-      notification.classList.remove('fade-out');
-    }, 400); // correspond à la durée de transition fade-out
-  }, duration);
-}
-
-
     boutonValider.onclick = async () => {
       const prenom = document.getElementById("prenomInput").value.trim();
       if (!prenom) {
-        alert("Veuillez entrer votre prénom");
+        showNotification("Veuillez entrer votre prénom");
         return;
       }
 
