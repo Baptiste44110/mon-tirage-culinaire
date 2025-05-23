@@ -38,7 +38,7 @@
     const btnDeconnexion = document.getElementById("btnDeconnexion");
     const btnSupprimerTous = document.getElementById("btnSupprimerTous");
     const liste = document.getElementById("liste");
-    const mode = sessionStorage.getItem("mode") || "invite"; // "connecte" ou "invite"
+    const mode = sessionStorage.getItem("mode") || "invite";
 
     let plats = [];
     let currentUser = null;
@@ -59,7 +59,7 @@
           <p><strong>Pays :</strong> ${plat.pays}</p>
           <p><strong>Continent :</strong> ${plat.continent}</p>
           <p><em>${plat.description}</em></p>
-          <button data-index="${index}">Supprimer ce plat</button>
+          <button class="btn-supprimer" data-index="${index}">Supprimer ce plat</button>
         `;
         div.querySelector("button").onclick = () => supprimerPlat(index);
         liste.appendChild(div);
@@ -80,7 +80,6 @@
       afficherListe();
     }
 
-    // Nouveau : supprimer tous les plats
     btnSupprimerTous.onclick = async () => {
       if (!confirm("Voulez-vous vraiment supprimer TOUS les plats ?")) return;
 
@@ -106,7 +105,7 @@
 
     btnDeconnexion.onclick = async () => {
       await signOut(auth);
-      sessionStorage.clear(); // Nettoie le mode et l'UID
+      sessionStorage.clear();
       window.location.href = "index.html";
     };
 
