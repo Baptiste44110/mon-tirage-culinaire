@@ -33,33 +33,32 @@ h3 {
   position: fixed;
   top: 20px;
   right: 20px;
-  background-color: #9c27b0;
+  padding: 12px 20px;
+  border-radius: 5px;
   color: white;
-  padding: 20px 40px;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  font-weight: 600;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  z-index: 10000;
+  font-weight: bold;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-10px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.4s ease;
+  z-index: 9999;
+  background-color: rebeccapurple; /* couleur par défaut */
 }
 
-#notification.visible {
+.notification.visible {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
 }
-
-
 
 .notification.fade-out {
   opacity: 0;
-  transform: translateY(-10px); /* Corrigé ici */
-  pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.notification.error {
+  background-color: #e74c3c; /* rouge vif pour erreur */
+}
+
+.notification.info {
+  background-color: rebeccapurple; /* violet */
 }
 
 
