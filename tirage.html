@@ -25,7 +25,7 @@
     </div>
 
     <div class="resultat-container">
-      <div id="resultat"></div>
+      <div id="resultat" class="invisible"></div>
 
       <div id="validationSection" style="display: none; margin-top: 20px;">
         <p style="text-align: center; margin-bottom: 10px;">Qui réalise ce plat cette semaine&nbsp;?</p>
@@ -147,6 +147,8 @@
 
     function afficherResultat(plat) {
       const resultat = document.getElementById("resultat");
+     resultat.classList.remove("invisible"); // <-- ligne ajoutée
+      
       const son = document.getElementById("sonTirage");
       son.currentTime = 0;
       son.play();
