@@ -65,8 +65,7 @@ h3 {
 }
 
 .btn-vert {
-  background-color: #2ecc71;
-  color: white;
+  background-color: #27ae60;
 }
 .btn-vert:hover {
   background-color: #219150;
@@ -75,7 +74,6 @@ h3 {
 
 .btn-bleu {
   background-color: #3498db;
-  color: white;
 }
 .btn-bleu:hover {
   background-color: #2980b9;
