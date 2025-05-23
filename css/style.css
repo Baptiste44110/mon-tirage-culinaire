@@ -363,11 +363,13 @@ table th, table td {
 .page-tirage .validation-container {
   display: flex;
   gap: 10px;
-  justify-content: center;
+  justify-content: flex-start;
+  width: 100%;
 }
 
 .page-tirage .validation-container input[type="text"] {
   flex-grow: 1;
+  min-width: 0;
 }
 
 /* Animations */
