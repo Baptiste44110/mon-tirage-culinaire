@@ -113,10 +113,10 @@ canvas {
 }
 
 #fleche {
-  position: absolute;
-  top: -10px;
+ position: absolute;
+  top: -20px; /* Ajuste si besoin */
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) rotate(0deg);
   width: 0;
   height: 0;
   border-left: 20px solid transparent;
@@ -300,6 +300,10 @@ table th, table td {
 .btn-supprimer:hover {
   background-color: #c0392b;
   transform: scale(1.05);
+}
+
+#btnSupprimerTous {
+  margin-top: 30px;
 }
 
 /* Animations */
