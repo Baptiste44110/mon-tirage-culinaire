@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Tirage au sort culinaire</title>
   <link rel="stylesheet" href="css/style.css" />
+  
 </head>
 <body class="page-tirage">
 
@@ -54,9 +55,6 @@
       sauvegarderHistoriqueFirebase
     } from './firebase.js';
 
-    // Import de la fonction showNotification depuis fonctions.js
-    import { showNotification } from './fonctions.js';
-
     const mode = sessionStorage.getItem('mode');
     if (!mode) {
       window.location.href = 'index.html';
@@ -105,13 +103,11 @@
       return couleurs[i % couleurs.length];
     }
 
-    // Maintenant, dessiner la roue selon un angle donné
-    function dessinerRoue(angle) {
-      const nbSections = Math.max(plats.length, 8);
-      const anglePart = (2 * Math.PI) / nbSections;
+    function dessinerRoue() {
+      const anglePart = (2 * Math.PI) / Math.max(plats.length, 8);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < nbSections; i++) {
-        const start = angle + i * anglePart;
+      for (let i = 0; i < Math.max(plats.length, 8); i++) {
+        const start = angleInitial + i * anglePart;
         const end = start + anglePart;
         ctx.beginPath();
         ctx.moveTo(rayon, rayon);
@@ -142,13 +138,12 @@
         count++;
         const progress = count / steps;
         const easeOut = 1 - Math.pow(1 - progress, 3);
-        const angleCourant = angleInitial + (angleFinal - angleInitial) * easeOut;
+        angleInitial = angleFinal * easeOut;
 
-        dessinerRoue(angleCourant);
+        dessinerRoue();
 
         if (count >= steps) {
           clearInterval(interval);
-          angleInitial = angleCourant; // mise à jour finale de l'angle
           const index = Math.floor(Math.random() * plats.length);
           platChoisi = plats[index];
           afficherResultat(platChoisi);
@@ -158,18 +153,41 @@
     }
 
     function afficherResultat(plat) {
-      resultat.innerHTML = `
+      resultat.innerHTML = 
         <h2>🍽️ ${plat.nom}</h2>
         <p><strong>Pays :</strong> ${plat.pays}</p>
         <p><strong>Continent :</strong> ${plat.continent}</p>
         <p><em>${plat.description}</em></p>
-      `;
+      ;
       resultat.classList.remove("invisible");
 
       const son = document.getElementById("sonTirage");
       son.currentTime = 0;
       son.play();
     }
+
+    // Fonction notification custom
+   let notificationTimeout;
+
+function showNotification(message, duration = 3000) {
+  const notification = document.getElementById('notification');
+  notification.textContent = message;
+  notification.classList.remove('fade-out'); // enlève fade-out si présent
+  notification.classList.add('visible');
+
+  if (notificationTimeout) clearTimeout(notificationTimeout);
+
+  notificationTimeout = setTimeout(() => {
+    // Ajoute classe fade-out pour animation disparition
+    notification.classList.add('fade-out');
+    // Puis au bout de la transition, enlève visible
+    setTimeout(() => {
+      notification.classList.remove('visible');
+      notification.classList.remove('fade-out');
+    }, 400); // correspond à la durée de transition fade-out
+  }, duration);
+}
+
 
     boutonValider.onclick = async () => {
       const prenom = document.getElementById("prenomInput").value.trim();
@@ -213,7 +231,7 @@
           if (user) {
             currentUser = user;
             plats = await chargerPlatsFirebase(user);
-            dessinerRoue(angleInitial);
+            dessinerRoue();
             userEmailSpan.textContent = user.email || user.displayName || "Utilisateur connecté";
           } else {
             userEmailSpan.textContent = "Non connecté";
@@ -222,13 +240,12 @@
         });
       } else if (mode === 'invite') {
         plats = JSON.parse(localStorage.getItem('platsPerso')) || [];
-        dessinerRoue(angleInitial);
+        dessinerRoue();
         userEmailSpan.textContent = "Mode invité";
       }
     }
 
     chargerPlats();
-
   </script>
 </body>
 </html>
