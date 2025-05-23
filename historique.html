@@ -103,7 +103,7 @@
       try {
         const userHistorique = historiqueData[uid];
         if (!userHistorique || index < 0 || index >= userHistorique.length) {
-          alert("Entrée non trouvée.");
+          showNotification("Entrée non trouvée.",3000,'error');
           return;
         }
 
@@ -113,11 +113,11 @@
         // Écrire le tableau mis à jour dans Firebase
         await set(ref(db, `historique/${uid}`), userHistorique);
 
-        alert("Entrée supprimée avec succès !");
+         showNotification("Entrée supprimée avec succès !",3000,'info');
         chargerHistoriqueTousUtilisateurs(); // Recharger pour mise à jour affichage
       } catch (error) {
         console.error("Erreur lors de la suppression :", error);
-        alert("Erreur lors de la suppression.");
+        showNotification("Erreur lors de la suppression.",3000,'error');
       }
     }
 
