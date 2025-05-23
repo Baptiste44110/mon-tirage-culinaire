@@ -430,10 +430,8 @@ table th, table td {
 
 /* test invisible */
 .invisible {
-  display: none;
+ display: none !important;
 }
-
-
 
 /* Animations */
 @keyframes fadeInBody {
