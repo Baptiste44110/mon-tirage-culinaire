@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Tirage au sort culinaire</title>
   <link rel="stylesheet" href="css/style.css" />
-  
 </head>
 <body class="page-tirage">
 
@@ -103,12 +102,15 @@
       return couleurs[i % couleurs.length];
     }
 
-    function dessinerRoue() {
-      const anglePart = (2 * Math.PI) / Math.max(plats.length, 8);
+    function dessinerRoue(angle) {
+      const nbParts = Math.max(plats.length, 8);
+      const anglePart = (2 * Math.PI) / nbParts;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let i = 0; i < Math.max(plats.length, 8); i++) {
-        const start = angleInitial + i * anglePart;
+
+      for (let i = 0; i < nbParts; i++) {
+        const start = angle + i * anglePart;
         const end = start + anglePart;
+
         ctx.beginPath();
         ctx.moveTo(rayon, rayon);
         ctx.arc(rayon, rayon, rayon, start, end);
@@ -128,7 +130,7 @@
       resultat.innerHTML = "";
       validationSection.style.display = "none";
 
-      let tours = 5 + Math.random() * 3;
+      const tours = 5 + Math.random() * 3;
       const angleFinal = angleInitial + 2 * Math.PI * tours;
       const duration = 4000;
       const steps = 60;
@@ -138,12 +140,13 @@
         count++;
         const progress = count / steps;
         const easeOut = 1 - Math.pow(1 - progress, 3);
-        angleInitial = angleFinal * easeOut;
+        const angleCourant = angleInitial + (angleFinal - angleInitial) * easeOut;
 
-        dessinerRoue();
+        dessinerRoue(angleCourant);
 
         if (count >= steps) {
           clearInterval(interval);
+          angleInitial = angleCourant; // mise à jour de l'angle initial
           const index = Math.floor(Math.random() * plats.length);
           platChoisi = plats[index];
           afficherResultat(platChoisi);
@@ -153,12 +156,12 @@
     }
 
     function afficherResultat(plat) {
-      resultat.innerHTML = 
+      resultat.innerHTML = `
         <h2>🍽️ ${plat.nom}</h2>
         <p><strong>Pays :</strong> ${plat.pays}</p>
         <p><strong>Continent :</strong> ${plat.continent}</p>
         <p><em>${plat.description}</em></p>
-      ;
+      `;
       resultat.classList.remove("invisible");
 
       const son = document.getElementById("sonTirage");
@@ -167,27 +170,26 @@
     }
 
     // Fonction notification custom
-   let notificationTimeout;
+    let notificationTimeout;
 
-function showNotification(message, duration = 3000) {
-  const notification = document.getElementById('notification');
-  notification.textContent = message;
-  notification.classList.remove('fade-out'); // enlève fade-out si présent
-  notification.classList.add('visible');
+    function showNotification(message, duration = 3000) {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.classList.remove('fade-out'); // enlève fade-out si présent
+      notification.classList.add('visible');
 
-  if (notificationTimeout) clearTimeout(notificationTimeout);
+      if (notificationTimeout) clearTimeout(notificationTimeout);
 
-  notificationTimeout = setTimeout(() => {
-    // Ajoute classe fade-out pour animation disparition
-    notification.classList.add('fade-out');
-    // Puis au bout de la transition, enlève visible
-    setTimeout(() => {
-      notification.classList.remove('visible');
-      notification.classList.remove('fade-out');
-    }, 400); // correspond à la durée de transition fade-out
-  }, duration);
-}
-
+      notificationTimeout = setTimeout(() => {
+        // Ajoute classe fade-out pour animation disparition
+        notification.classList.add('fade-out');
+        // Puis au bout de la transition, enlève visible
+        setTimeout(() => {
+          notification.classList.remove('visible');
+          notification.classList.remove('fade-out');
+        }, 400); // correspond à la durée de transition fade-out
+      }, duration);
+    }
 
     boutonValider.onclick = async () => {
       const prenom = document.getElementById("prenomInput").value.trim();
@@ -231,7 +233,7 @@ function showNotification(message, duration = 3000) {
           if (user) {
             currentUser = user;
             plats = await chargerPlatsFirebase(user);
-            dessinerRoue();
+            dessinerRoue(angleInitial);
             userEmailSpan.textContent = user.email || user.displayName || "Utilisateur connecté";
           } else {
             userEmailSpan.textContent = "Non connecté";
@@ -240,7 +242,7 @@ function showNotification(message, duration = 3000) {
         });
       } else if (mode === 'invite') {
         plats = JSON.parse(localStorage.getItem('platsPerso')) || [];
-        dessinerRoue();
+        dessinerRoue(angleInitial);
         userEmailSpan.textContent = "Mode invité";
       }
     }
