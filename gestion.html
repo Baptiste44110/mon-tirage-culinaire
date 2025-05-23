@@ -199,10 +199,11 @@
       await sauvegarderPlats(currentUser);
       platsImportTemporaire = [];
       document.getElementById("previewImport").innerHTML = "";
-      document.getElementById("messageImport").textContent =
-        platsAjoutes > 0
-          ? ✅ ${platsAjoutes} plats importés avec succès !
-          : "⚠️ Tous les plats étaient déjà présents.";
+       document.getElementById("messageImport").textContent =
+    platsAjoutes > 0
+      ? `✅ ${platsAjoutes} plats importés avec succès !`
+      : "⚠️ Tous les plats étaient déjà présents.";
+
 
       setTimeout(() => {
         document.getElementById("messageImport").textContent = "";
