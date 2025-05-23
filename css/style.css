@@ -317,6 +317,55 @@ table th, table td {
 #btnSupprimerTous {
   margin-top: 30px;
 }
+.page-tirage .container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  flex-wrap: nowrap;
+}
+
+.page-tirage .boutons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 40px;
+  flex-shrink: 0;
+  width: 150px; /* Ajuste selon besoin */
+}
+
+.page-tirage .roue-wrapper {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.page-tirage .resultat-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 300px;
+}
+
+.page-tirage #resultat {
+  width: 100%;
+  min-height: 150px;
+}
+
+.page-tirage #validationSection {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.page-tirage .validation-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.page-tirage .validation-container input[type="text"] {
+  flex-grow: 1;
+}
 
 /* Animations */
 @keyframes fadeInBody {
