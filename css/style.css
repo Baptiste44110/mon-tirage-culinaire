@@ -90,11 +90,20 @@ h3 {
 
 /* Boutons spécifiques */
 .btn-hero {
-  @extend .btn;
   font-size: 18px;
   padding: 14px 36px;
   background-color: #3498db;
   box-shadow: 0 6px 16px rgba(0, 123, 255, 0.3);
+  color: white;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 123, 255, 0.3);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .btn-hero:hover {
@@ -148,6 +157,10 @@ canvas {
   margin: 0;
   transition: transform 0.3s ease;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
 }
 
 #resultat h2 {
@@ -179,12 +192,17 @@ canvas {
   color: #555;
 }
 .card button {
-  @extend .btn;
   background-color: #e74c3c;
   font-size: 14px;
   padding: 8px 16px;
   align-self: flex-start;
   margin-top: auto;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 .card button:hover {
   background-color: #c0392b;
@@ -279,13 +297,18 @@ table th, table td {
 
 /* Retour gestion */
 #btnRetourGestion {
-  @extend .btn;
   background-color: #3498db;
   padding: 12px 28px;
   font-size: 16px;
   max-width: 300px;
   margin: 30px auto 50px auto;
   display: block;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 #btnRetourGestion:hover {
   background-color: #2980b9;
@@ -310,7 +333,8 @@ table th, table td {
 #btnSupprimerTous {
   margin-top: 30px;
 }
-/*Page tirage */
+
+/* Page tirage */
 .page-tirage .container {
   display: flex;
   justify-content: center;
@@ -337,9 +361,8 @@ table th, table td {
   position: relative;
 }
 
-
 .page-tirage .resultat-container {
-   display: flex;
+  display: flex;
   flex-direction: column;
   align-items: center;  /* centre horizontalement */
   justify-content: center; /* centre verticalement */
@@ -348,11 +371,16 @@ table th, table td {
 }
 
 .page-tirage #resultat {
+  flex-grow: 1; /* occupe tout l’espace vertical disponible sauf validation */
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: center; /* centre verticalement texte dans résultat */
   width: 100%;
   min-height: 150px;
+  background: #ffffffcc;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 20px;
 }
 
 .page-tirage #validationSection {
@@ -363,13 +391,16 @@ table th, table td {
 .page-tirage .validation-container {
   display: flex;
   gap: 10px;
-  justify-content: flex-start;
-  width: 100%;
+  justify-content: center;
 }
 
 .page-tirage .validation-container input[type="text"] {
   flex-grow: 1;
-  min-width: 0;
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 /* Animations */
