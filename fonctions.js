@@ -2,7 +2,7 @@
 
 let notificationTimeout;
 
-function showNotification(message, duration = 3000, type = 'info') {
+export function showNotification(message, duration = 3000, type = 'info') {
   const notification = document.getElementById('notification');
   notification.textContent = message;
 
