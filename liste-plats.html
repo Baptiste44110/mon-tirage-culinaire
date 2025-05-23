@@ -103,7 +103,6 @@
       <button class="btn-supprimer" data-index="${index}">Supprimer ce plat</button>
     `;
     div.querySelector("button").onclick = () => {
-      console.log("Bouton supprimer cliqué - index:", index);
       demanderConfirmation("Voulez-vous vraiment supprimer ce plat ?", (confirmed) => {
         if (confirmed) supprimerPlat(index);
       });
