@@ -351,8 +351,8 @@ table th, table td {
 }
 
 .page-tirage canvas {
-  width: 350px !important;
-  height: 350px !important;
+  width: 500px !important;
+  height: 500px !important;
   box-shadow: 0 8px 24px rgba(0,0,0,0.2);
   border-radius: 50%;
   background-color: white;
