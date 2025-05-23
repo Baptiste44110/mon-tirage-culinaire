@@ -120,10 +120,13 @@
         }
         userEmailSpan.textContent = user.email || user.displayName || "Utilisateur connecté";
         btnDeconnexion.style.display = "inline-block";
+        btnDeconnexion.textContent = "Déconnexion";
       } else {
         userEmailSpan.textContent = "Mode invité";
-        btnDeconnexion.style.display = "none";
+        btnDeconnexion.style.display = "inline-block";
+        btnDeconnexion.textContent = "Retour à l'accueil";
       }
+
 
       chargerPlats();
     });
