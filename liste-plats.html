@@ -91,25 +91,34 @@
         return;
       }
 
-      plats.sort((a, b) => a.nom.toLowerCase().localeCompare(b.nom.toLowerCase()));
-      plats.forEach((plat, index) => {
-        const div = document.createElement("div");
-        div.className = "card";
-        div.innerHTML = `
-          <h3>${plat.nom}</h3>
-          <p><strong>Pays :</strong> ${plat.pays}</p>
-          <p><strong>Continent :</strong> ${plat.continent}</p>
-          <p><em>${plat.description}</em></p>
-          <button class="btn-supprimer" data-index="${index}">Supprimer ce plat</button>
-        `;
-        div.querySelector("button").onclick = () => {
-          demanderConfirmation("Voulez-vous vraiment supprimer ce plat ?", (confirmed) => {
-            if (confirmed) supprimerPlat(index);
-          });
-        };
-        liste.appendChild(div);
+     function afficherListe() {
+  liste.innerHTML = "";
+  if (plats.length === 0) {
+    liste.innerHTML = "<p>Aucun plat enregistré.</p>";
+    return;
+  }
+
+  plats.sort((a, b) => a.nom.toLowerCase().localeCompare(b.nom.toLowerCase()));
+  plats.forEach((plat, index) => {
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <h3>${plat.nom}</h3>
+      <p><strong>Pays :</strong> ${plat.pays}</p>
+      <p><strong>Continent :</strong> ${plat.continent}</p>
+      <p><em>${plat.description}</em></p>
+      <button class="btn-supprimer" data-index="${index}">Supprimer ce plat</button>
+    `;
+    div.querySelector("button").onclick = () => {
+      console.log("Bouton supprimer cliqué - index:", index);
+      demanderConfirmation("Voulez-vous vraiment supprimer ce plat ?", (confirmed) => {
+        if (confirmed) supprimerPlat(index);
       });
-    }
+    };
+    liste.appendChild(div);
+  });
+}
+
 
     async function supprimerPlat(index) {
       plats.splice(index, 1);
