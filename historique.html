@@ -71,7 +71,7 @@
               <td>
                 ${entry.note !== undefined && entry.note !== null
                   ? `<span class="note-affichee">${entry.note}/10 <button class="modifier-note" data-uid="${uid}" data-index="${index}">✏️</button></span>`
-                  : `<input type="number" class="note-input" data-uid="${uid}" data-index="${index}" min="0" max="10" step="1" placeholder="0-10" style="width: 60px;" />`
+                  : `<input type="number" class="note-input" data-uid="${uid}" data-index="${index}" min="0" max="10" step="0.1" placeholder="0-10" style="width: 60px;" />`
                 }
               </td>
               <td>
@@ -95,7 +95,8 @@
         input.addEventListener('change', async (e) => {
           const uid = e.target.dataset.uid;
           const index = parseInt(e.target.dataset.index);
-          const nouvelleNote = parseInt(e.target.value);
+          const nouvelleNote = Math.round(parseFloat(e.target.value) * 10) / 10;
+
 
           if (isNaN(nouvelleNote) || nouvelleNote < 0 || nouvelleNote > 10) {
             showNotification("Veuillez entrer une note valide entre 0 et 10.", 3000, 'error');
@@ -120,12 +121,12 @@
           const currentNote = historiqueData[uid][index].note ?? '';
           ligne.cells[6].innerHTML = `
             <input type="number" class="note-input" data-uid="${uid}" data-index="${index}"
-              min="0" max="10" step="1" value="${currentNote}" style="width: 60px;" />
+              min="0" max="10" step="0.1" value="${currentNote}" style="width: 60px;" />
           `;
 
           // Re-attacher l'événement
           ligne.querySelector('.note-input').addEventListener('change', async (e) => {
-            const nouvelleNote = parseInt(e.target.value);
+            const nouvelleNote = Math.round(parseFloat(e.target.value) * 10) / 10;
             if (isNaN(nouvelleNote) || nouvelleNote < 0 || nouvelleNote > 10) {
               showNotification("Veuillez entrer une note valide entre 0 et 10.", 3000, 'error');
               return;
