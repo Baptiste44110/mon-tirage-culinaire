@@ -49,7 +49,7 @@
     import { get, ref, set } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
 
     const tableBody = document.getElementById("tableHistorique");
-    let historiqueData = {}; // stocke toutes les données lues de Firebase
+    let historiqueData = {};
 
     async function chargerHistoriqueTousUtilisateurs() {
       const snap = await get(ref(db, 'historique'));
@@ -70,7 +70,7 @@
               <td>${entry.plat.continent}</td>
               <td>
                 ${entry.note !== undefined && entry.note !== null
-                  ? `<span class="note-affichee">${entry.note}/10 <button class="modifier-note" data-uid="${uid}" data-index="${index}">✏️</button></span>`
+                  ? `<span class="note-affichee">${entry.note.toFixed(2)}/10 <button class="modifier-note" data-uid="${uid}" data-index="${index}">✏️</button></span>`
                   : `<input type="number" class="note-input" data-uid="${uid}" data-index="${index}" min="0" max="10" step="0.1" placeholder="0-10" style="width: 60px;" />`
                 }
               </td>
@@ -86,16 +86,16 @@
         ? lignes.join("")
         : '<tr><td colspan="8">Aucune entrée dans l’historique.</td></tr>';
 
-      attacherEvenements(); // 🔧 Attacher tous les événements après le rendu
+      attacherEvenements();
     }
 
     function attacherEvenements() {
-      // Gérer l'ajout d'une note de 0 à 10
       document.querySelectorAll('.note-input').forEach(input => {
         input.addEventListener('change', async (e) => {
           const uid = e.target.dataset.uid;
           const index = parseInt(e.target.dataset.index);
-          const nouvelleNote = Math.round(parseFloat(e.target.value) * 10) / 10;
+          const rawValue = parseFloat(e.target.value);
+          const nouvelleNote = Math.round(rawValue * 100) / 100;
 
           if (isNaN(nouvelleNote) || nouvelleNote < 0 || nouvelleNote > 10) {
             showNotification("Veuillez entrer une note valide entre 0 et 10.", 3000, 'error');
@@ -110,7 +110,6 @@
         });
       });
 
-      // Gérer la modification d'une note existante
       document.querySelectorAll('.modifier-note').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const uid = btn.dataset.uid;
@@ -123,12 +122,10 @@
               min="0" max="10" step="0.1" value="${currentNote}" style="width: 60px;" />
           `;
 
-          const input = ligne.querySelector('.note-input');
+          ligne.querySelector('.note-input').addEventListener('change', async (e) => {
+            const rawValue = parseFloat(e.target.value);
+            const nouvelleNote = Math.round(rawValue * 100) / 100;
 
-          async function sauvegarderNote(e) {
-            if (e.type === 'keydown' && e.key !== 'Enter') return; // n'enregistrer que sur Enter ou blur
-
-            const nouvelleNote = Math.round(parseFloat(input.value) * 10) / 10;
             if (isNaN(nouvelleNote) || nouvelleNote < 0 || nouvelleNote > 10) {
               showNotification("Veuillez entrer une note valide entre 0 et 10.", 3000, 'error');
               return;
@@ -138,14 +135,10 @@
             await set(ref(db, `historique/${uid}`), historiqueData[uid]);
             showNotification("Note mise à jour !", 2000, 'info');
             chargerHistoriqueTousUtilisateurs();
-          }
-
-          input.addEventListener('keydown', sauvegarderNote);
-          input.addEventListener('blur', sauvegarderNote);
+          });
         });
       });
 
-      // Boutons supprimer
       document.querySelectorAll('.btn-supprimer').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const uid = e.target.getAttribute('data-uid');
@@ -179,7 +172,6 @@
       btnNo.addEventListener('click', onNo);
     }
 
-    // Fonction notification custom
     let notificationTimeout;
 
     function showNotification(message, duration = 3000, type = 'info') {
