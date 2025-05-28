@@ -97,7 +97,6 @@
           const index = parseInt(e.target.dataset.index);
           const nouvelleNote = Math.round(parseFloat(e.target.value) * 10) / 10;
 
-
           if (isNaN(nouvelleNote) || nouvelleNote < 0 || nouvelleNote > 10) {
             showNotification("Veuillez entrer une note valide entre 0 et 10.", 3000, 'error');
             return;
@@ -124,9 +123,12 @@
               min="0" max="10" step="0.1" value="${currentNote}" style="width: 60px;" />
           `;
 
-          // Re-attacher l'événement
-          ligne.querySelector('.note-input').addEventListener('change', async (e) => {
-            const nouvelleNote = Math.round(parseFloat(e.target.value) * 10) / 10;
+          const input = ligne.querySelector('.note-input');
+
+          async function sauvegarderNote(e) {
+            if (e.type === 'keydown' && e.key !== 'Enter') return; // n'enregistrer que sur Enter ou blur
+
+            const nouvelleNote = Math.round(parseFloat(input.value) * 10) / 10;
             if (isNaN(nouvelleNote) || nouvelleNote < 0 || nouvelleNote > 10) {
               showNotification("Veuillez entrer une note valide entre 0 et 10.", 3000, 'error');
               return;
@@ -136,7 +138,10 @@
             await set(ref(db, `historique/${uid}`), historiqueData[uid]);
             showNotification("Note mise à jour !", 2000, 'info');
             chargerHistoriqueTousUtilisateurs();
-          });
+          }
+
+          input.addEventListener('keydown', sauvegarderNote);
+          input.addEventListener('blur', sauvegarderNote);
         });
       });
 
